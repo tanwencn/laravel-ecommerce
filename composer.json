@@ -1,0 +1,34 @@
+{
+    "name": "tanwencn/laravel-ecommerce",
+    "description": "TanwenCms Extended",
+    "type": "library",
+    "keywords": ["laravel", "shop", "mall"],
+    "homepage": "https://github.com/tanwencn/laravel-ecommerce",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "tanwen",
+            "email": "361657055@qq.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0.0",
+        "tanwencn/laravel-cms": "~1",
+    },
+    "autoload": {
+        "psr-4": {
+            "Tanwencn\\Ecommerce\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Tanwencn\\Ecommerce\\EcommerceServiceProvider"
+            ]
+
+        }
+    }
+}
