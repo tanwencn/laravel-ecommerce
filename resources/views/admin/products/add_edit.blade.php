@@ -1,11 +1,50 @@
-<!-- ================== BEGIN PAGE LEVEL JS ================== -->
-{{--<script data-action="" src="{{ asset('vendor/laravel-cms/layer/layer.js') }}"></script>
-<script src="{{ asset('vendor/laravel-cms/sortable/Sortable.min.js') }}"></script>
-<script src="{{ asset('vendor/laravel-cms/tinymce/tinymce.min.js') }}"></script>
-<script src="{{ asset('vendor/laravel-ecommerce/js/admin/products.select.attributes.js') }}"></script>
-<script src="{{ asset('vendor/laravel-cms/js/jquery.pin.js') }}"></script>--}}
-<!-- ================== END PAGE LEVEL JS ================== -->
 <style>
+    .panel-group .panel-heading{
+        cursor: pointer;
+    }
+
+    .tab-pane {
+        min-height: 42px;
+        max-height: 200px;
+        overflow: auto;
+        padding: 12px;
+        border: 1px solid #ddd;
+        background-color: #fdfdfd;
+    }
+
+    .tab-pane ul {
+        padding: 0;
+        list-style: none;
+    }
+
+    .tab-pane ul li {
+        margin: 0;
+        padding: 0 0 0 21px;
+        line-height: 18px;
+        display: list-item;
+        list-style: none;
+        position: relative;
+    }
+
+    .tab-pane ul li label {
+        margin-bottom: 8px;
+        font-weight: normal !important;
+        cursor: pointer;
+    }
+
+    .tab-pane ul li div {
+        position: absolute;
+        top: 1px;
+        left: 0;
+    }
+
+    [aria-expanded="false"] .fa-angle-up {
+        display: none;
+    }
+
+    [aria-expanded="true"] .fa-angle-down {
+        display: none;
+    }
 
     .table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
         vertical-align: middle;
@@ -35,9 +74,22 @@
     .input-group-addon{
         padding: 6px 6px;
     }
+
+    .posts{
+        margin-right: 300px;
+    }
+    .posts-left{
+        float: left;
+        width: 100%;
+    }
+    .posts-right{
+        float: right;
+        width: 280px;
+        margin-right: -300px;
+    }
 </style>
 <script>
-    var money_identifier = '￥';
+    var money_identifier = "{{ trans('Ecommerce::admin.currency') }}";
 </script>
 
 @if (count($errors) > 0)
@@ -49,65 +101,47 @@
     @endforeach
 @endif
 
-<form action="{{ isset($product->id)?route('Ecommerce.admin.products.update', $product->id):route('Ecommerce.admin.products.store') }}"
+<form data-pjax="true" action="{{ isset($product->id)?route('admin.products.update', $product->id):route('admin.products.store') }}"
       method="POST">
 {{ csrf_field() }}
 @if(isset($product->id))
     {{ method_field("PUT") }}
 @endif
 <!-- begin row -->
-    <div class="row">
+    <div class="posts">
         <!-- begin col-12 -->
-        <div class="col-md-8">
+        <div class="posts-left">
             <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">基本信息</h3>
-                </div>
                 <div class="panel-body">
                     <div class="row form-horizontal">
                         <div class="form-group">
-                            <label class="control-label col-md-2">名称：</label>
+                            <label class="control-label col-md-2">{{ trans('TanwenCms::admin.title') }}：</label>
                             <div class="col-md-8">
-                                <input type="text" name="title" class="form-control"
-                                       placeholder="请输入商品名称" value="{{ old('title', $product->title)}}">
+                                <input type="text" name="title" class="form-control" value="{{ old('title', $product->title)}}">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="control-label col-md-2">促销语：</label>
+                            <label class="control-label col-md-2">{{ trans('Ecommerce::admin.product_short_description') }}：</label>
                             <div class="col-md-8">
-                                    <textarea type="text" class="form-control" placeholder="请输入商品促销语"
-                                              name="summary">{{ old('summary', $product->summary)}}</textarea>
+                                <textarea type="text" class="form-control" name="summary">{{ old('summary', $product->summary)}}</textarea>
                             </div>
                         </div>
-                        {{--<div class="form-group">
-                            <label class="control-label col-md-2">库存预警：</label>
-                            <div class="col-md-1">
-                                <input type="number" id="stock_warning" class="form-control"
-                                       placeholder="请输入库存预警"
-                                       data-parsley-group="wizard-step-2" value="0" max="255"
-                                       data-parsley-type="number" required>
-                            </div>
-                            <div class="col-md-7">
-                                设置最低库存预警值。当库存低于预警值时商家中心商品列表页库存列红字提醒。
-                                <br>请填写0~255的数字，0为不预警
-                            </div>
-                        </div>--}}
                     </div>
                 </div>
             </div>
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">库存</h3>
+                    <h3 class="panel-title">{{ trans('Ecommerce::admin.sales_options') }}</h3>
                 </div>
                 <div class="panel-body">
                     <div class="form-horizontal">
-                        <div class="col-md-2 text-right"><label class="control-label">属性：</label></div>
+                        <div class="col-md-2 text-right"><label class="control-label">{{ trans('Ecommerce::admin.attributes') }}：</label></div>
                         <div class="form-group col-md-10">
                             <select class="select2 select-attributes form-control" name="terms[]"
-                                    multiple="multiple" data-placeholder="选择销售属性">
+                                    multiple="multiple" data-placeholder="{{ trans('Ecommerce::admin.select_sales_attribute') }}">
                                 <option value=""></option>
                                 @foreach ($attriibutes as $val)
-                                    <option {{ in_array($val->id, $terms->all()) ? 'selected="selected" ' : '' }} value="{{ $val->id }}">{{ $val->title }}</option>
+                                    <option {{ in_array($val->id, $terms->all()) ? 'selected="selected" ' : '' }} value="{{ $val->id }}" data-tw="tanwencms" data-items="{{ $val }}">{{ $val->title }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -127,29 +161,17 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="posts-right">
             <div class="right-panel">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">设置</h3>
+                        <h3 class="panel-title">{{ trans('TanwenCms::admin.settings') }}</h3>
                     </div>
                     <div class="panel-body">
 
                         <div class="form-group">
-                            <label class="control-label">分类：</label>
-                            <select class="select2 select-category form-control" multiple="multiple" name="terms[]"
-                                    data-placeholder="选择分类">
-                                <option value=""></option>
-                                @foreach ($categories as $id => $title)
-                                    <option {{ in_array($id, $terms->all()) ? 'selected="selected" ' : '' }} value="{{ $id }}">{{ $title }}</option>
-                                @endforeach;
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="control-label">标签：</label>
-                            <select class="select2 select-tags form-control" multiple="multiple" name="terms[]"
-                                    data-placeholder="选择标签">
+                            <label class="control-label">{{ trans_choice('TanwenCms::admin.tag', 0) }}：</label>
+                            <select class="select2 select-tags form-control" multiple="multiple" name="terms[]" >
                                 <option value=""></option>
                                 @foreach ($tags as $id => $title)
                                     <option {{ in_array($id, $terms->all()) ? 'selected="selected" ' : '' }} value="{{ $id }}">{{ $title }}</option>
@@ -157,29 +179,50 @@
                             </select>
                         </div>
 
-                        {{--<div class="form-group">
-                            <label for="url-slug-input">Url Slug</label>
-                            <input type="text" class="form-control" id="url-slug-input" placeholder="Slug">
-                        </div>--}}
-
                         <div class="form-group">
-                            <label for="url-slug-input">发布</label>
+                            <label for="url-slug-input">{{ trans('Ecommerce::admin.shelves') }}</label>
                             <select name="is_release" class="form-control">
-                                <option value="0" {{ old('is_release', $product->is_release)<1?'selected':''}}>下架</option>
-                                <option value="1" {{ old('is_release', $product->is_release)==1?'selected':''}}>上架</option>
+                                <option value="0" {{ old('is_release', $product->is_release)==0?'selected':''}}>{{ trans('Ecommerce::admin.unshelves') }}</option>
+                                <option value="1" {{ old('is_release', $product->is_release)!=0?'selected':''}}>{{ trans('Ecommerce::admin.shelves') }}</option>
                             </select>
                         </div>
                     </div>
                 </div>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading collapsed" role="tab" data-toggle="collapse" data-parent="#accordion"
+                         href="#select_categories" aria-expanded="true" aria-controls="collapseTwo">
+                        <h4 class="panel-title">
+                            {{ trans_choice('TanwenCms::admin.product_category', 1) }}
+                            <span class="pull-right" role="button">
+                            <i class="fa fa-angle-down"></i>
+                            <i class="fa fa-angle-up"></i>
+                        </span>
+                        </h4>
+                    </div>
+                    <div id="select_categories" class="panel-collapse collapse in" role="tabpanel">
+                        <div class="panel-body">
+                            <!-- Tab panes -->
+                            <div class="tab-content">
+                                <div role="tabpanel" class="tab-pane active" id="select_categories_all">
+                                    <ul>
+                                        @each('TanwenCms::components.tree.multiple_choice_items', $categories, 'model')
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">相册</h3>
+                        <h3 class="panel-title">{{ trans('Ecommerce::admin.product_gallery') }}</h3>
                     </div>
 
                     <div class="panel-body" style="padding: 10px">
                         <p>
                             <a href="javascript:showImageSelector('gallery');">
-                                添加图片
+                                {{ trans('TanwenCms::admin.select_image') }}
                             </a>
                         </p>
                         <div id="gallery">
@@ -190,7 +233,7 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-lg btn-block">保存</button>
+                <button type="submit" class="btn btn-primary btn-lg btn-block">{{ trans('TanwenCms::admin.save') }}</button>
             </div>
         </div>
         <!-- end panel -->
@@ -203,32 +246,22 @@
 
 
 <script>
+
     // function to update the file selected by elfinder
     var processSelectedFileId = '';
 
     function processSelectedFile(file, requestingField) {
         if (requestingField == 'tinymce4') {
-            $('#' + processSelectedFileId).val(file.url);
+            processSelectedFileId(file.url);
         } else {
             $.each(file, function (index, val) {
                 $('#' + requestingField).append('<div class="col-md-4"><img class="img-rounded img-responsive" src="' + val.url + '"><input name="metas[gallery][]" value="' + val.url + '" type="hidden"><button type="button" class="btn btn-box-tool delete" data-original-title="Remove"><i class="fa fa-times"><\/i><\/button><\/div>');
             });
-            $(".right-panel").pin({
-                containerSelector: ".row"
-            });
+            /*$(".right-panel").pin({
+                containerSelector: ".row",
+                bottom:100
+            });*/
         }
-    }
-
-    function showImageSelector(url) {
-        layer.open({
-            type: 2,
-            title: '选择图片',
-            shadeClose: true,
-            shade: false,
-            maxmin: true, //开启最大化最小化按钮
-            area: ['80%', '70%'],
-            content: '/{{ config('admin.route.prefix') }}/elfinder/popup/' + url
-        });
     }
 
     $('#gallery').on('click', '.delete', function () {
@@ -243,7 +276,21 @@
     });
 
 
+    var terms = JSON.parse('{!! $terms->toJson() !!}');
     $(function () {
+
+        $('#select_categories :input[type="checkbox"]').attr('name', 'terms[]');
+
+        $('#select_categories :input[type="checkbox"]').on('ifCreated', function(event){
+            if($.inArray(parseInt($(this).val()), terms) >= 0 || $.inArray($(this).val().toString(), terms) >= 0) {
+                $(this).prop('checked', true);
+            }
+        });
+
+        $('#select_categories :input[type="checkbox"]').iCheck({
+            checkboxClass: 'icheckbox_minimal-red',
+            increaseArea: '20%' // optional
+        });
 
         Sortable.create(gallery, {
             animation: 150, // ms, animation speed moving items when sorting, `0` — without animation
@@ -262,10 +309,9 @@
             menubar: true,
             convert_urls: false,
             file_picker_types: 'image',
-            file_browser_callback: function (field_name, url, type, win) {
-                processSelectedFileId = field_name;
+            file_picker_callback: function(cb, value, meta) {
+                processSelectedFileId = cb;
                 showImageSelector("tinymce4?multiple=false&id='+field_name");
-                return false;
             },
             plugins: [
                 'advlist autolink lists link image code charmap print preview anchor',
@@ -290,29 +336,32 @@
 
         AttributeSelect.init({
             selected: JSON.parse('{!! $terms->toJson() !!}'),
-            call: {
-                init: function () {
-                    function initSelectAttributes() {
-                        var parent_id = $('.select-attributes').val();
-                        $.getJSON("{{ route('Ecommerce.admin.products.findAttrValues') }}", {parent_id: parent_id}, function (data) {
-                            AttributeSelect.run(data);
+            default: JSON.parse('{!! $skus !!}'),
+            language:{
+                'price': "{{ trans('Ecommerce::admin.price') }}",
+                'market_price': "{{ trans('Ecommerce::admin.market_price') }}",
+                'cost_price': "{{ trans('Ecommerce::admin.cost_price') }}",
+                'stock': "{{ trans('Ecommerce::admin.stock') }}",
+                'batch': "{{ trans('TanwenCms::admin.batch') }}",
+            },
+            init: function () {
+                function initSelectAttributes() {
+                    var parent_id = $('.select-attributes').val();
+
+                    var items = [];
+                    if($('.select-attributes').val() != null) {
+                        $.each($('.select-attributes').val(), function (index, value) {
+                            items.push($('.select-attributes').find('option[value="' + value + '"]').data('items'));
                         });
                     }
-
-                    initSelectAttributes();
-                    $('.select-attributes').change(function () {
-                        initSelectAttributes();
-                    });
-                },
-                defaultByCode: function (code) {
-                    var skus = JSON.parse('{!! $skus !!}');
-                    if (skus[code]) {
-                        return skus[code];
-                    } else {
-                        return {'price': 0, 'market_price': 0, 'cost_price': 0, 'stock': 0};
-                    }
+                    AttributeSelect.run(items);
                 }
-            }
+
+                initSelectAttributes();
+                $('.select-attributes').change(function () {
+                    initSelectAttributes();
+                });
+            },
         });
 
         $('.goods-select-attributes [type="text"]').not(':disabled').each(function (index, val) {

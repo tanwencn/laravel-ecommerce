@@ -1,6 +1,6 @@
 <?php
 
-namespace Tanwencn\Ecommerce\Helpers;
+namespace Tanwencn\Ecommerce;
 
 use Encore\Admin\Admin;
 use Encore\Admin\Auth\Database\Menu;
@@ -32,16 +32,15 @@ class LaravelAdmin extends Extension
         parent::routes(function ($router) {
             $router->resource('ecommerce/products', 'Tanwencn\Ecommerce\Http\Admin\Controllers\ProductController', [
                 'names' => [
-                    'index' => 'Ecommerce.admin.products.index',
-                    'create' => 'Ecommerce.admin.products.create',
-                    'store' => 'Ecommerce.admin.products.store',
-                    'show' => 'Ecommerce.admin.products.show',
-                    'edit' => 'Ecommerce.admin.products.edit',
-                    'update' => 'Ecommerce.admin.products.update',
-                    'destroy' => 'Ecommerce.admin.products.destroy'
+                    'index' => 'admin.products.index',
+                    'create' => 'admin.products.create',
+                    'store' => 'admin.products.store',
+                    'show' => 'admin.products.show',
+                    'edit' => 'admin.products.edit',
+                    'update' => 'admin.products.update',
+                    'destroy' => 'admin.products.destroy'
                 ]
             ]);
-            $router->get('ecommerce/product/findAttrValues', 'Tanwencn\Ecommerce\Http\Admin\Controllers\ProductController@findAttrValues')->name('Ecommerce.admin.products.findAttrValues');
 
             $router->resource('ecommerce/categories', 'Tanwencn\Ecommerce\Http\Admin\Controllers\CategoryController');
 
@@ -59,7 +58,7 @@ class LaravelAdmin extends Extension
             'parent_id' => 0,
             'order'     => $lastOrder++,
             'title'     => trans_choice('TanwenCms::admin.product', 0),
-            'icon'      => 'fa-align-center',
+            'icon'      => 'fa-shopping-bag',
             'uri'       => '',
         ];
 
@@ -113,6 +112,6 @@ class LaravelAdmin extends Extension
 
     public static function importAssets()
     {
-        Admin::js(asset('vendor/laravel-ecommerce/js/admin/products.select.attributes.js'));
+        Admin::js(asset('vendor/laravel-ecommerce/js/admin/products.select.attributes.min.js'));
     }
 }

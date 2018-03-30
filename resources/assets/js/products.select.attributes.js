@@ -5,6 +5,14 @@ var AttributeSelect = function () {
     "use strict";
     return {
         selected: [],
+        language: {
+            'price': "Price",
+            'market_price': 'Market price',
+            'cost_price': 'Cost price',
+            'stock': 'Stock',
+            'batch': "Batch"
+        },
+        default: {},
         data: {},
         parser: {
             combine: function (arr) {
@@ -34,8 +42,12 @@ var AttributeSelect = function () {
         },
         init: function (config) {
             var _this = this;
-            if (config['call']) {
-                _this.call = config['call'];
+            if ($(config['default']).length > 0) {
+                _this.default = config['default'];
+            }
+
+            if (config['language']) {
+                _this.language = $.extend(_this.language, config['language']);
             }
             if (config['selected']) {
                 _this.selected = config['selected'];
@@ -60,8 +72,8 @@ var AttributeSelect = function () {
                 _this.initTable();
             });
 
-            if (_this.call.init) {
-                _this.call.init();
+            if (config.init) {
+                config.init();
             }
 
             /*$.when(_this.data).then(function (data) {
@@ -124,11 +136,6 @@ var AttributeSelect = function () {
             $('.select-attr-values').html(html);
 
         },
-        call: {
-            defaultByCode: function (code) {
-                return {'price': 0, 'market_price': 0, 'cost_price': 0, 'stock': 0};
-            }
-        },
         initTable: function () {
             var _this = this;
 
@@ -188,7 +195,12 @@ var AttributeSelect = function () {
                     skucode = 'item';
                 }
 
-                var val = _this.call.defaultByCode(skucode);
+                if (_this.default[skucode] == undefined) {
+                    var val = {'price': 0, 'market_price': 0, 'cost_price': 0, 'stock': 0};
+                } else {
+                    var val = _this.default[skucode];
+                }
+
                 td += "<tr>" + str + '<td>' +
                     '<div class="input-group">' +
                     '<span class="input-group-addon p-5">' + money_identifier + '</span>' +
@@ -212,7 +224,7 @@ var AttributeSelect = function () {
                     '</td></tr>';
             });
 
-            $('.table-stock').html('<table class="table table-bordered"><thead>' + beforTh + '<th class="col-md-2 text-center">价格</th><th class="col-md-2 text-center">市场价</th><th class="col-md-2 text-center">成本价</th><th class="col-md-2 text-center">库存</th>' + td + '<tfoot><tr><td colspan="9" style="text-align:left;"><div class="batch-opts">批量设置：<span><a class="batch" data-field="price" href="javascript:;">价格</a>&nbsp;&nbsp;<a class="batch" data-field="market_price" href="javascript:;">市场价</a>&nbsp;&nbsp;	<a class="batch" data-field="cost_price" href="javascript:;">成本价</a>&nbsp;&nbsp;	<a class="batch" data-field="stock" data-type="number" href="javascript:;">库存</a>	</span></div></td></tr></tfoot></table>');
+            $('.table-stock').html('<table class="table table-bordered"><thead>' + beforTh + '<th class="col-md-2 text-center">' + _this.language["price"] + '</th><th class="col-md-2 text-center">' + _this.language["market_price"] + '</th><th class="col-md-2 text-center">' + _this.language["cost_price"] + '</th><th class="col-md-2 text-center">' + _this.language["stock"] + '</th>' + td + '<tfoot><tr><td colspan="9" style="text-align:left;"><div class="batch-opts">' + _this.language["batch"] + '：<span><a class="batch" data-field="price" href="javascript:;">' + _this.language["price"] + '</a>&nbsp;&nbsp;<a class="batch" data-field="market_price" href="javascript:;">' + _this.language["market_price"] + '</a>&nbsp;&nbsp;	<a class="batch" data-field="cost_price" href="javascript:;">' + _this.language["cost_price"] + '</a>&nbsp;&nbsp;	<a class="batch" data-field="stock" data-type="number" href="javascript:;">' + _this.language["stock"] + '</a>	</span></div></td></tr></tfoot></table>');
 
             $('input[data-type="price"]').keyup(function () {
                 var reg = $(this).val().match(/\d+\.?\d{0,2}/);
@@ -259,14 +271,10 @@ var AttributeSelect = function () {
 
                         reg = new RegExp(/(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/);
                         if (!reg.test(value)) {
-                            return "输入不合法";
+                            return "Please enter the number";
                         }
                     }
                 });
-            });
-
-            $(".right-panel").pin({
-                containerSelector: ".row"
             });
         }
     }

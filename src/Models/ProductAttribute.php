@@ -7,19 +7,4 @@ use Tanwencn\Cms\Models\Traits\ContentTrait;
 
 class ProductAttribute extends TermAbstract
 {
-    use ContentTrait;
-
-    public function getTaxonomy()
-    {
-        return 'product_attr';
-    }
-
-    public function children(){
-        return $this->hasMany(static::class, 'parent_id');
-    }
-
-    public function scopeOnlyName($query, $exchange = false)
-{
-    return $query->where('parent_id', ($exchange?'!=':'='), 0);
-}
 }

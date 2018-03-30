@@ -7,11 +7,4 @@ use Tanwencn\Cms\Models\Traits\ContentTrait;
 
 class ProductTag extends TermAbstract
 {
-    use ContentTrait;
-
-    public function getTaxonomy()
-    {
-        return 'product_tag';
-    }
-
 }

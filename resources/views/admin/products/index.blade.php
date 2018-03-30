@@ -7,21 +7,17 @@
         <div class="col-md-12">
             <div class="panel panel-inverse" style="margin-bottom: 10px">
                 <div class="panel-body">
-                    <form id="search" action="{{ url()->current() }}">
+                    <form id="search" data-pjax="true" action="{{ route('admin.products.index') }}">
                         <input type="hidden" name="trashed" value="{{ request('trashed', 0) }}">
                         <input type="hidden" name="release" value="{{ request('release') }}">
                         <div class="form-inline">
                             <div class="form-group">
-                                <select class="form-control" name="search_field">
-                                    <option value="title" {{ request('term_title')?'':'selected' }}>商品名称</option>
-                                    <option value="term_title" {{ request('term_title')?'selected':'' }}>分类、属性、标签</option>
-                                </select>
-                                <input type="input" name="search_value"
-                                       value="{{ request('title', request('term_title')) }}" class="form-control"
-                                       placeholder="搜索相关数据...">
+                                <input type="input" name="search"
+                                       value="{{ request('search', request('search')) }}" class="form-control"
+                                       placeholder="{{ trans('TanwenCms::admin.search_related') }}...">
                             </div>
                             <button type="submit" class="btn btn-primary">
-                                <i class="fa fa-search f-s-14"></i> 搜 索
+                                <i class="fa fa-search f-s-14"></i> {{ trans('TanwenCms::admin.search') }}
                             </button>
                         </div>
                     </form>
@@ -31,46 +27,47 @@
             <div class="panel panel-inverse">
                 <div class="panel-body">
                     <div class="btn-group">
-                        <button type="button" class="btn btn-default btn-sm">批量操作</button>
+                        <button type="button" class="btn btn-default btn-sm">{{ trans('TanwenCms::admin.batch') }}</button>
                         <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
                             <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a href="javascript:void(0)" class="grid-batch-release" data-value="1">上架</a></li>
-                            <li><a href="javascript:void(0)" class="grid-batch-release" data-value="0">下架</a></li>
+                            <li><a href="javascript:void(0)" class="grid-batch-release" data-value="1">{{ trans('Ecommerce::admin.shelves') }}</a></li>
+                            <li><a href="javascript:void(0)" class="grid-batch-release" data-value="0">{{ trans('Ecommerce::admin.unshelves') }}</a></li>
                             <li role="separator" class="divider"></li>
                             @if(request('trashed'))
-                                <li><a href="javascript:void(0)" class="grid-batch-restore">恢复</a></li>
+                                <li><a href="javascript:void(0)" class="grid-batch-restore">{{ trans('TanwenCms::admin.restore') }}</a></li>
                                 <li><a href="javascript:void(0)" class="grid-batch-delete"
-                                       data-message="永久删除后，数据将不可回复，你确定要继续吗？">永久删除</a></li>
+                                       data-message="{{ trans('TanwenCms::admin.delete_message') }}">{{ trans('TanwenCms::admin.delete_permanently') }}</a></li>
                             @else
                                 <li><a href="javascript:void(0)" class="grid-batch-delete"
-                                       data-message="After deletion, you can restore the data at the Recycle Bin.">移动到回收站</a>
+                                       data-message="{{ trans('TanwenCms::admin.trash_message') }}">{{ trans('TanwenCms::admin.move_trash') }}</a>
                                 </li>
                             @endif
                         </ul>
                     </div>
                     <div class="btn-group" data-toggle="buttons">
                         <label class="btn btn-default btn-sm grid-trashed {{ request('trashed')?'active':'' }}">
-                            <i class="fa f-s-12 fa-trash-o"></i> 回收站({{ $statistics['delete'] }})
+                            <i class="fa f-s-12 fa-trash-o"></i> {{ trans('TanwenCms::admin.trash') }}{{ $statistics['delete'] }})
                         </label>
                     </div>
 
                     @if(empty(request('trashed')))
-                    <div class="btn-group" data-toggle="buttons">
-                        <label class="btn btn-default btn-sm grid-release {{ request('release')?:'active' }}"
-                               data-value="">所有({{ $statistics['total'] }})
-                        </label>
-                        <label class="btn btn-default btn-sm grid-release {{ request('release')=='up'?'active':'' }}"
-                               data-value="up">上架({{ $statistics['release'] }})
-                        </label>
-                        <label class="btn btn-default btn-sm grid-release {{ request('release')=='down'?'active':'' }}"
-                               data-value="down">下架({{ $statistics['unrelease'] }})
-                        </label>
-                    </div>
+                        <div class="btn-group" data-toggle="buttons">
+                            <label class="btn btn-default btn-sm grid-release {{ request('release')?:'active' }}"
+                                   data-value="">{{ trans('TanwenCms::admin.all') }}{{ $statistics['total'] }})
+                            </label>
+                            <label class="btn btn-default btn-sm grid-release {{ request('release')=='up'?'active':'' }}"
+                                   data-value="up">{{ trans('Ecommerce::admin.shelves') }}({{ $statistics['release'] }})
+                            </label>
+                            <label class="btn btn-default btn-sm grid-release {{ request('release')=='down'?'active':'' }}"
+                                   data-value="down">{{ trans('Ecommerce::admin.unshelves') }}({{ $statistics['unrelease'] }})
+                            </label>
+                        </div>
                     @endif
-                    <a class="btn btn-sm btn-success pull-right" href="{{ route('Ecommerce.admin.products.create') }}"><i
-                                class="fa fa-plus f-s-12"></i> 发布新商品</a>
+                    <a class="btn btn-sm btn-success pull-right" href="{{ route('admin.products.create') }}">
+                        <i class="fa fa-plus f-s-12"></i> {{ trans('TanwenCms::admin.add_product') }}
+                    </a>
 
                     <table class="table table-hover" style="margin-top: 15px;">
                         <tbody>
@@ -79,16 +76,16 @@
                             <th>ID{{--<a class="fa fa-fw fa-sort"
                                      href="http://laravel-admin.org/demo/users?gender=f&amp;_pjax=%23pjax-container&amp;_sort%5Bcolumn%5D=id&amp;_sort%5Btype%5D=desc"></a>--}}
                             </th>
-                            <th>封面</th>
-                            <th>名称</th>
+                            <th>{{ trans('TanwenCms::admin.cover') }}</th>
+                            <th>{{ trans('TanwenCms::admin.title') }}</th>
                             <th>SKU</th>
-                            <th>库存</th>
-                            <th>最低价格</th>
-                            <th>分类</th>
-                            <th>标签</th>
-                            <th>上架</th>
-                            <th>最后编辑时间</th>
-                            <th>操作</th>
+                            <th>{{ trans('Ecommerce::admin.stock') }}</th>
+                            <th>{{ trans('Ecommerce::admin.price') }}({{ trans('Ecommerce::admin.currency') }})</th>
+                            <th>{{ trans_choice('TanwenCms::admin.category', 0) }}</th>
+                            <th>{{ trans_choice('TanwenCms::admin.tag', 0) }}</th>
+                            <th>{{ trans('Ecommerce::admin.shelves') }}</th>
+                            <th>{{ trans('TanwenCms::admin.updated_at') }}</th>
+                            <th>{{ trans('TanwenCms::admin.operating') }}</th>
                         </tr>
                         @foreach($results as $product)
                             <tr>
@@ -104,20 +101,20 @@
                                 <td>{{ $product->title }}</td>
                                 <td>
                                     <a class="btn btn-xs btn-default grid-expand" data-inserted="0"
-                                       data-key="{{ $body->id }}" data-toggle="collapse"
+                                       data-key="{{ $product->id }}" data-toggle="collapse"
                                        data-target="#grid-collapse-{{ $product->id }}">
-                                        <i class="fa fa-caret-right"></i> 查看({{ $product->skus_count }})
+                                        <i class="fa fa-caret-right"></i> {{ trans('TanwenCms::admin.view') }}({{ $product->skus_count }})
                                     </a>
                                     <template class="grid-expand-{{ $product->id }}">
                                         <div id="grid-collapse-{{ $product->id }}" class="collapse">
                                             <table class="table">
                                                 <thead>
                                                 <tr>
-                                                    <th>属性</th>
-                                                    <th>价格</th>
-                                                    <th>成本</th>
-                                                    <th>库存</th>
-                                                    <th>销量</th>
+                                                    <th>{{ trans('Ecommerce::admin.attributes') }}</th>
+                                                    <th>{{ trans('Ecommerce::admin.price') }}</th>
+                                                    <th>{{ trans('Ecommerce::admin.cost_price') }}</th>
+                                                    <th>{{ trans('Ecommerce::admin.stock') }}</th>
+                                                    <th>{{ trans('Ecommerce::admin.sales_volume') }}</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
@@ -145,22 +142,26 @@
                                         </div>
                                     </template>
                                 </td>
-                                <td>{{ $product->sku->sum('stock') }}</td>
-                                <td>{{ $body->sku->min('price') }}</td>
-                                <td>{{ $body->terms->where('taxonomy', 'product_cat')->implode('title', ',') }}</td>
-                                <td>{{ $body->terms->where('taxonomy', 'product_tag')->implode('title', ',') }}</td>
+                                <td>{{ $product->skus->sum('stock') }}</td>
+                                @php
+                                $min_price = $product->skus->min('price');
+                                $max_price = $product->skus->min('price');
+                                @endphp
+                                <td>@if($min_price == $max_price) {{ $min_price }} @else {{ $max_price }} ~ {{ $max_price }} @endif</td>
+                                <td>{{ $product->categories->implode('title', ',') }}</td>
+                                <td>{{ $product->tags->implode('title', ',') }}</td>
                                 <td>
-                                    <input type="checkbox" data-key="{{ $body->id }}" data-onname="上架" data-offname="下架"
-                                           class="grid-switch-released" {{ $body->is_release?'checked':'' }} />
+                                    <input type="checkbox" data-key="{{ $product->id }}" data-onname="{{ trans('Ecommerce::admin.shelves') }}" data-offname="{{ trans('Ecommerce::admin.unshelves') }}"
+                                           class="grid-switch-released" {{ $product->is_release?'checked':'' }} />
                                 </td>
-                                <td>{{ $body->updated_at }}</td>
+                                <td>{{ $product->updated_at }}</td>
                                 <td style="min-width: 60px">
                                     @if(request('trashed'))
-                                        <a href="javascript:void(0);" data-id="{{ $body->id }}" class="grid-row-restore">恢复</a>&nbsp;&nbsp;&nbsp;
-                                        <a href="javascript:void(0);" data-id="{{ $body->id }}" class="grid-row-delete" data-message="永久删除后，数据将不可回复，你确定要继续吗？">永久删除</a>
+                                        <a href="javascript:void(0);" data-id="{{ $product->id }}" class="grid-row-restore">{{ trans('TanwenCms::admin.restore') }}</a>&nbsp;&nbsp;&nbsp;
+                                        <a href="javascript:void(0);" data-id="{{ $product->id }}" class="grid-row-delete" data-message="{{ trans('TanwenCms::admin.delete_confirm') }}"> {{ trans('TanwenCms::admin.delete_permanently') }}</a>
                                     @else
-                                        <a href="{{ route('Ecommerce.admin.products.edit', $body->id) }}">编辑</a>&nbsp;&nbsp;&nbsp;
-                                        <a href="javascript:void(0);" data-id="{{ $body->id }}" class="grid-row-delete" data-message="After deletion, you can restore the data at the Recycle Bin.">删除</a>
+                                        <a href="{{ route('admin.products.edit', $product->id) }}">{{ trans('TanwenCms::admin.edit') }}</a>&nbsp;&nbsp;&nbsp;
+                                        <a href="javascript:void(0);" data-id="{{ $product->id }}" class="grid-row-delete" data-message="After deletion, you can restore the data at the Recycle Bin.">{{ trans('TanwenCms::admin.delete') }}</a>
                                     @endif
                                 </td>
                             </tr>
@@ -169,8 +170,12 @@
                     </table>
                     <div class="row">
                         <div class="col-sm-5">
-                            <div class="pull-left pagination">Showing {{ $results->firstItem() }}
-                                to {{ $results->lastItem() }} of {{ $results->total() }} entries
+                            <div class="pull-left pagination">
+                                {{ trans('TanwenCms::pagination.range', [
+                                'first' => $results->firstItem(),
+                                'last' => $results->lastItem(),
+                                'total' => $results->total(),
+                                ]) }}
                             </div>
                         </div>
                         <div class="col-sm-7">
@@ -228,14 +233,14 @@
 
                 $('.grid-switch-released').bootstrapSwitch({
                     size: 'mini',
-                    onText: 'YES',
-                    offText: 'NO',
+                    onText: '{{ trans('TanwenCms::admin.yes') }}',
+                    offText: '{{ trans('TanwenCms::admin.no') }}',
                     onSwitchChange: function (event, state) {
                         var pk = $(this).data('key');
                         var value = state ? '1' : '0';
                         $.ajax({
                             method: 'post',
-                            url: '{{ route('Ecommerce.admin.products.index') }}/' + pk,
+                            url: '{{ route('admin.products.index') }}/' + pk,
                             data: {
                                 _method: 'PUT',
                                 _token: "{{ csrf_token() }}",
@@ -273,7 +278,7 @@
                     var value = $(this).data('value');
                     $.ajax({
                         method: 'post',
-                        url: '{{ route('Ecommerce.admin.products.index') }}/' + id,
+                        url: '{{ route('admin.products.index') }}/' + id,
                         data: {
                             _method: 'PUT',
                             _token: "{{ csrf_token() }}",
@@ -303,7 +308,7 @@
                     var value = $(this).data('value');
                     $.ajax({
                         method: 'post',
-                        url: '{{ route('Ecommerce.admin.products.index') }}/' + id,
+                        url: '{{ route('admin.products.index') }}/' + id,
                         data: {
                             _method: 'PUT',
                             _token: "{{ csrf_token() }}",
@@ -341,7 +346,7 @@
                                 action: function () {
                                     $.ajax({
                                         method: 'post',
-                                        url: '{{ route('Ecommerce.admin.products.index') }}/' + id,
+                                        url: '{{ route('admin.products.index') }}/' + id,
                                         data: {
                                             _method: 'DELETE',
                                             _token: "{{ csrf_token() }}"

@@ -23,11 +23,7 @@ class AttributeController extends Controller
     public function index()
     {
         return Admin::content(function (Content $content) {
-            $content->header('商品属性');
-
-            $content->breadcrumb(
-                ['text' => '属性列表']
-            );
+            $content->header(trans('Ecommerce::admin.attributes'));
 
             $content->body($this->grid());
         });
@@ -67,15 +63,15 @@ class AttributeController extends Controller
                 $grid->model()->onlyTrashed();
             }
 
-            $grid->model()->onlyName();
+            $grid->model()->tree();
 
             $grid->id('ID')->sortable();
 
-            $grid->title('属性名称')->limit(30);
+            $grid->title(trans('TanwenCms::admin.name'))->limit(30);
 
-            $grid->children('属性值')->pluck('title')->label();
+            $grid->children(trans_choice('TanwenCms::admin.value', 1))->pluck('title')->label();
 
-            $grid->created_at('创建时间');
+            $grid->created_at(trans('TanwenCms::admin.created_at'));
 
             $grid->rows(function (Grid\Row $row) {
                 if ($row->id % 2) {

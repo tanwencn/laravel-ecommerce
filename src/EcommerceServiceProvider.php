@@ -8,10 +8,8 @@
 
 namespace Tanwencn\Ecommerce;
 
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
-use Tanwencn\Ecommerce\Helpers\LaravelAdmin;
-use Tanwencn\Ecommerce\Http\ViewComposers\MenuComposer;
+use Tanwencn\Ecommerce\Http\ViewComposers\MultipleChoiceSidebarComposer;
 
 class EcommerceServiceProvider extends \Illuminate\Support\ServiceProvider
 {
@@ -28,13 +26,14 @@ class EcommerceServiceProvider extends \Illuminate\Support\ServiceProvider
     public function boot()
     {
         $this->loadMigrationsFrom(__DIR__ . '/../migrations');
+        $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'Ecommerce');
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'TanwenCms');
 
         if ($this->app->runningInConsole()) {
             $this->publishes([__DIR__.'/../resources/assets' => public_path('vendor/laravel-ecommerce')], 'public');
         }
 
-        View::composer('TanwenTanwenCms::admin.menus.add_edit', MenuComposer::class);
+        View::composer('TanwenTanwenCms::admin.menus.add_edit', MultipleChoiceSidebarComposer::class);
 
         LaravelAdmin::boot();
     }

@@ -21,51 +21,50 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         //基础数据
-        $terms = ProductCategory::select('id', 'parent_id', 'title')->get();
-        $categories = $terms->buildSelect();
+        $categories = ProductCategory::select('id', 'parent_id', 'title', 'taxonomy')->get();
         $model = Product::with('terms', 'skus')->withCount('skus')->byOrder('new');
 
 
         //筛选器
         $trashed = $request->query('trashed');
-        $term_title = $request->query('term_title');
-        $title = $request->query('title');
+        $search = $request->query('search');
         $release = $request->query('release');
 
-        if ($trashed) {
-            $model->onlyTrashed();
+        if (!$trashed && !$release) {
+            $model->withUnReleased();
         } else {
-            if ($release) {
-                if ($release != 'up')
-                    $model->onlyUnReleased();
-            } else {
+            if ($trashed) {
+                $model->onlyTrashed();
                 $model->withUnReleased();
+            } else if ($release != 'up') {
+                $model->onlyUnReleased();
             }
         }
 
-        $title && $model->where('title', 'like', "%{$title}%");
+        if (!empty($search)) {
+            $model->where('title', 'like', "%{$search}%");
+            $model->orWhereHas('terms', function ($query) use ($search) {
+                $query->where('title', 'like', "%{$search}%");
+            });
+        }
 
-        !empty($term_title) && $model->whereHas('terms', function ($query) use ($term_title) {
-            $query->where('title', 'like', "%{$term_title}%");
-        });
-
-        $results = $model->paginate(2);
+        $results = $model->paginate();
 
         $statistics = [
             'total' => Product::withUnReleased()->count(),
             'release' => Product::count(),
             'unrelease' => Product::onlyUnReleased()->count(),
-            'delete' => Product::withUnReleased()->onlyTrashed()->count()
+            'delete' => Product::onlyTrashed()->withUnReleased()->count()
         ];
 
-        $this->setPageTitle('商品列表');
+        $this->setPageTitle(trans('Ecommerce::admin.product_list'));
 
-        return $this->view('Ecommerce::admin.products.index', compact('results', 'categories', 'terms', 'statistics', 'title'));
+        return $this->view('TanwenCms::admin.products.index', compact('results', 'categories', 'terms', 'statistics', 'title'));
     }
 
     public function create()
     {
-        $this->setPageTitle('添加商品');
+        $this->setPageTitle(trans('Ecommerce::admin.add_product'));
         return $this->_form(new Product());
     }
 
@@ -80,7 +79,7 @@ class ProductController extends Controller
         ])->findOrFail($id);
 
 
-        $this->setPageTitle('编辑商品');
+        $this->setPageTitle(trans('Ecommerce::admin.edit_product'));
 
         return $this->_form($model);
     }
@@ -88,11 +87,11 @@ class ProductController extends Controller
     protected function _form(Product $product)
     {
 
-        $categories = ProductCategory::select('id', 'parent_id', 'title')->get()->buildSelect();
+        $categories = ProductCategory::tree()->get();
         $tags = ProductTag::select('id', 'parent_id', 'title')->get()->buildSelect();
-        $attriibutes = ProductAttribute::onlyName()->select('id', 'parent_id', 'title')->get();
+        $attriibutes = ProductAttribute::tree()->get();
 
-        $skus = collect(old('sku', []))->pipe(function ($collect) use ($product) {
+        $skus = collect(old('skus', []))->pipe(function ($collect) use ($product) {
             if ($product->id && $collect->isEmpty()) {
                 return $product->skus->keyBy('sku_code');
             } else {
@@ -108,7 +107,7 @@ class ProductController extends Controller
             }
         });
 
-        return $this->view('Ecommerce::admin.products.add_edit', compact('product', 'attriibutes', 'categories', 'tags', 'skus', 'terms'));
+        return $this->view('TanwenCms::admin.products.add_edit', compact('product', 'attriibutes', 'categories', 'tags', 'skus', 'terms'));
     }
 
     protected function save(Product $model)
@@ -145,7 +144,7 @@ class ProductController extends Controller
     public function store()
     {
         $this->save(new Product());
-        return redirect(app('request')->getUri())->with('prompt', '商品已添加！');
+        return redirect(app('request')->getUri())->with('prompt', trans('TanwenCms::admin.saved_successfully'));
     }
 
     public function update($id, Request $request)
@@ -170,14 +169,14 @@ class ProductController extends Controller
             }
             return response([
                 'status' => true,
-                'message' => '修改成功！',
+                'message' => trans('TanwenCms::admin.saved_successfully'),
             ]);
         }
 
         $model = Product::withUnReleased()->findOrFail($id);
         $this->save($model);
 
-        return redirect(route('Ecommerce.admin.products.index'))->with('prompt', '修改成功！');
+        return redirect(route('admin.products.index'))->with('prompt', trans('TanwenCms::admin.saved_successfully'));
     }
 
     public function destroy($id)
@@ -199,19 +198,7 @@ class ProductController extends Controller
         }
         return response([
             'status' => true,
-            'message' => '修改成功！',
+            'message' => trans('TanwenCms::admin.saved_successfully'),
         ]);
-    }
-
-    public function findAttrValues()
-    {
-        $parent_id = \request('parent_id');
-        if (empty($parent_id)) {
-            return [];
-        }
-
-        return ProductAttribute::whereIn('id', $parent_id)->with(['children' => function ($query) {
-            $query->select('id', 'parent_id', 'title');
-        }])->select('id', 'parent_id', 'title')->get();
     }
 }

@@ -13,7 +13,7 @@ use Illuminate\View\View;
 use Tanwencn\Ecommerce\Models\Product;
 use Tanwencn\Ecommerce\Models\ProductCategory;
 
-class MenuComposer
+class MultipleChoiceSidebarComposer
 {
     public function compose(View $view)
     {
