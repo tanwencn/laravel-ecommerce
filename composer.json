@@ -13,7 +13,7 @@
     ],
     "require": {
         "php": ">=7.0.0",
-        "tanwencn/laravel-cms": "~1",
+        "tanwencn/laravel-cms": "~1"
     },
     "autoload": {
         "psr-4": {
