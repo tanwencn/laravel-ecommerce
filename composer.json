@@ -18,10 +18,7 @@
     "autoload": {
         "psr-4": {
             "Tanwencn\\Ecommerce\\": "src/"
-        },
-        "files": [
-            "src/helpers.php"
-        ]
+        }
     },
     "extra": {
         "laravel": {
