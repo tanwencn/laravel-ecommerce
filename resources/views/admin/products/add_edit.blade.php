@@ -135,8 +135,8 @@
                 </div>
                 <div class="panel-body">
                     <div class="form-horizontal">
-                        <div class="col-md-2 text-right"><label class="control-label">{{ trans('Ecommerce::admin.attributes') }}：</label></div>
-                        <div class="form-group col-md-10">
+                        <div class="col-md-3 text-right"><label class="control-label">{{ trans('Ecommerce::admin.attributes') }}：</label></div>
+                        <div class="form-group col-md-9">
                             <select class="select2 select-attributes form-control" name="terms[]"
                                     multiple="multiple" data-placeholder="{{ trans('Ecommerce::admin.select_sales_attribute') }}">
                                 <option value=""></option>
@@ -165,7 +165,7 @@
             <div class="right-panel">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{{ trans('TanwenCms::admin.settings') }}</h3>
+                        <h3 class="panel-title">{{ trans_choice('TanwenCms::admin.setting', 0) }}</h3>
                     </div>
                     <div class="panel-body">
 

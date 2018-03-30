@@ -112,6 +112,6 @@ class LaravelAdmin extends Extension
 
     public static function importAssets()
     {
-        Admin::js(asset('vendor/laravel-ecommerce/js/admin/products.select.attributes.min.js'));
+        Admin::js(asset('vendor/laravel-ecommerce/js/products.select.attributes.min.js'));
     }
 }

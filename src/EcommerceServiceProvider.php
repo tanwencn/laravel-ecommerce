@@ -30,7 +30,7 @@ class EcommerceServiceProvider extends \Illuminate\Support\ServiceProvider
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'TanwenCms');
 
         if ($this->app->runningInConsole()) {
-            $this->publishes([__DIR__.'/../resources/assets' => public_path('vendor/laravel-ecommerce')], 'public');
+            $this->publishes([__DIR__.'/../resources/assets' => public_path('vendor/laravel-ecommerce')], 'tanwencms-publish');
         }
 
         View::composer('TanwenTanwenCms::admin.menus.add_edit', MultipleChoiceSidebarComposer::class);
