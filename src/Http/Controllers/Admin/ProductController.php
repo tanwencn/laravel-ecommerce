@@ -1,9 +1,10 @@
 <?php
 
-namespace Tanwencn\Ecommerce\Http\Admin\Controllers;
+namespace Tanwencn\Ecommerce\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
-use Tanwencn\Cms\Http\Admin\Controller;
+use Illuminate\Routing\Controller;
+use Tanwencn\Cms\Http\Controllers\Admin\Traits\AdminTrait;
 use Tanwencn\Cms\Models\Term;
 use Illuminate\Support\Facades\DB;
 use Tanwencn\Ecommerce\Models\ProductAttribute;
@@ -13,11 +14,13 @@ use Tanwencn\Ecommerce\Models\ProductTag;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    use AdminTrait;
+
+    public function __construct()
+    {
+        $this->middleware('curd:'.Product::class.',ecommerce');
+    }
+
     public function index(Request $request)
     {
         //基础数据
@@ -57,14 +60,11 @@ class ProductController extends Controller
             'delete' => Product::onlyTrashed()->withUnReleased()->count()
         ];
 
-        $this->setPageTitle(trans('Ecommerce::admin.product_list'));
-
-        return $this->view('TanwenCms::admin.products.index', compact('results', 'categories', 'terms', 'statistics', 'title'));
+        return $this->view('products.index', compact('results', 'categories', 'terms', 'statistics', 'title'));
     }
 
     public function create()
     {
-        $this->setPageTitle(trans('Ecommerce::admin.add_product'));
         return $this->_form(new Product());
     }
 
@@ -86,9 +86,8 @@ class ProductController extends Controller
 
     protected function _form(Product $product)
     {
-
         $categories = ProductCategory::tree()->get();
-        $tags = ProductTag::select('id', 'parent_id', 'title')->get()->buildSelect();
+        $tags = ProductTag::select('id', 'parent_id', 'title')->get();
         $attriibutes = ProductAttribute::tree()->get();
 
         $skus = collect(old('skus', []))->pipe(function ($collect) use ($product) {
@@ -107,7 +106,7 @@ class ProductController extends Controller
             }
         });
 
-        return $this->view('TanwenCms::admin.products.add_edit', compact('product', 'attriibutes', 'categories', 'tags', 'skus', 'terms'));
+        return $this->view('products.add_edit', compact('product', 'attriibutes', 'categories', 'tags', 'skus', 'terms'));
     }
 
     protected function save(Product $model)
@@ -116,7 +115,7 @@ class ProductController extends Controller
 
         $this->validate($request, [
             'title' => 'required|max:120',
-            'summary' => 'max:80',
+            'excerpt' => 'max:80',
             'gallery' => 'array',
             'skus.*.price' => 'numeric|min:1',
             'skus.*.cost_price' => 'numeric|min:1',
@@ -144,7 +143,7 @@ class ProductController extends Controller
     public function store()
     {
         $this->save(new Product());
-        return redirect(app('request')->getUri())->with('prompt', trans('TanwenCms::admin.saved_successfully'));
+        return redirect(app('request')->getUri())->with('toastr_success', trans('admin.save_succeeded'));
     }
 
     public function update($id, Request $request)
@@ -169,14 +168,14 @@ class ProductController extends Controller
             }
             return response([
                 'status' => true,
-                'message' => trans('TanwenCms::admin.saved_successfully'),
+                'message' => trans('admin.save_succeeded'),
             ]);
         }
 
         $model = Product::withUnReleased()->findOrFail($id);
         $this->save($model);
 
-        return redirect(route('admin.products.index'))->with('prompt', trans('TanwenCms::admin.saved_successfully'));
+        return redirect(route('admin.products.index'))->with('toastr_success', trans('admin.save_succeeded'));
     }
 
     public function destroy($id)
@@ -198,7 +197,7 @@ class ProductController extends Controller
         }
         return response([
             'status' => true,
-            'message' => trans('TanwenCms::admin.saved_successfully'),
+            'message' => trans('admin.save_succeeded'),
         ]);
     }
 }

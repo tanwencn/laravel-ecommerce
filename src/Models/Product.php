@@ -8,7 +8,7 @@ class Product extends ContentAbstract
 {
     public function skus()
     {
-        return $this->hasMany(Sku::class, 'content_id');
+        return $this->hasMany(Sku::class, 'target_id');
     }
 
     public function getImageAttribute(){

@@ -1,4 +1,51 @@
 <style>
+    .panel-group .panel-heading{
+        cursor: pointer;
+    }
+
+    .tab-pane {
+        min-height: 42px;
+        max-height: 200px;
+        overflow: auto;
+        padding: 12px;
+        border: 1px solid #ddd;
+        background-color: #fdfdfd;
+    }
+
+    .tab-pane ul {
+        padding: 0;
+        list-style: none;
+    }
+
+    .tab-pane ul li {
+        margin: 0;
+        padding: 0 0 0 21px;
+        line-height: 18px;
+        display: list-item;
+        list-style: none;
+        position: relative;
+    }
+
+    .tab-pane ul li label {
+        margin-bottom: 8px;
+        font-weight: normal !important;
+        cursor: pointer;
+    }
+
+    .tab-pane ul li div {
+        position: absolute;
+        top: 1px;
+        left: 0;
+    }
+
+    [aria-expanded="false"] .fa-angle-up {
+        display: none;
+    }
+
+    [aria-expanded="true"] .fa-angle-down {
+        display: none;
+    }
+
     .table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
         vertical-align: middle;
     }
@@ -23,9 +70,39 @@
         background: #fff;
         display: none;
     }
-</style>
 
-<form action="{{ isset($product->id)?$_action('update', $product->id):$_action('store') }}" method="POST">
+    .input-group-addon{
+        padding: 6px 6px;
+    }
+
+    .posts{
+        margin-right: 300px;
+    }
+    .posts-left{
+        float: left;
+        width: 100%;
+    }
+    .posts-right{
+        float: right;
+        width: 280px;
+        margin-right: -300px;
+    }
+</style>
+<script>
+    var money_identifier = "{{ trans('Ecommerce::admin.currency') }}";
+</script>
+
+@if (count($errors) > 0)
+    @foreach ($errors->all() as $error)
+        <div class="alert alert-danger fade in" style="margin-bottom: 10px;">
+            {{ $error }}.
+            <span class="close" data-dismiss="alert">×</span>
+        </div>
+    @endforeach
+@endif
+
+<form data-pjax="true" action="{{ isset($product->id)?route('admin.products.update', $product->id):route('admin.products.store') }}"
+      method="POST">
 {{ csrf_field() }}
 @if(isset($product->id))
     {{ method_field("PUT") }}
@@ -34,58 +111,37 @@
     <div class="posts">
         <!-- begin col-12 -->
         <div class="posts-left">
-            <div class="box box-solid">
-                <div class="box-header">
-                </div>
-                <!-- /.box-header -->
-                <div class="box-body">
-
-                    <div class="form-horizontal">
-                        <div class="form-group {{ $errors->has('title')?"has-error":"" }}">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="row form-horizontal">
+                        <div class="form-group">
                             <label class="control-label col-md-2">{{ trans('admin.title') }}：</label>
                             <div class="col-md-8">
-                                @if($errors->has('title'))
-                                    <label class="control-label">
-                                        <i class="fa fa-times-circle-o"></i>{{$errors->first('title')}}
-                                    </label>
-                                @endif
                                 <input type="text" name="title" class="form-control" value="{{ old('title', $product->title)}}">
                             </div>
                         </div>
-                        <div class="form-group {{ $errors->has('excerpt')?"has-error":"" }}">
-                            <label class="control-label col-md-2">{{ trans('ecommerce.product_short_description') }}：</label>
+                        <div class="form-group">
+                            <label class="control-label col-md-2">{{ trans('Ecommerce::admin.product_short_description') }}：</label>
                             <div class="col-md-8">
-                                @if($errors->has('excerpt'))
-                                    <label class="control-label">
-                                        <i class="fa fa-times-circle-o"></i>{{$errors->first('excerpt')}}
-                                    </label>
-                                @endif
-                                <textarea type="text" class="form-control"
-                                          name="excerpt">{{ old('excerpt', $product->excerpt)}}</textarea>
+                                <textarea type="text" class="form-control" name="excerpt">{{ old('excerpt', $product->excerpt)}}</textarea>
                             </div>
                         </div>
                     </div>
                 </div>
-                <!-- /.box-body -->
             </div>
-
-            <div class="box box-solid">
-                <!-- /.box-header -->
-                <div class="box-header with-border">
-                    <h3 class="box-title">{{ trans('ecommerce.sales_options') }}</h3>
-                    <div class="box-tools pull-right">
-                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-                    </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{{ trans('Ecommerce::admin.sales_options') }}</h3>
                 </div>
-                <div class="box-body">
+                <div class="panel-body">
                     <div class="form-horizontal">
-                        <div class="col-md-3 text-right"><label class="control-label">{{ trans_choice('ecommerce.attribute', 0) }}：</label></div>
+                        <div class="col-md-3 text-right"><label class="control-label">{{ trans('Ecommerce::admin.attributes') }}：</label></div>
                         <div class="form-group col-md-9">
                             <select class="select2 select-attributes form-control" name="terms[]"
-                                    multiple="multiple" data-placeholder="{{ trans('ecommerce.select_sales_attribute') }}">
+                                    multiple="multiple" data-placeholder="{{ trans('Ecommerce::admin.select_sales_attribute') }}">
                                 <option value=""></option>
                                 @foreach ($attriibutes as $val)
-                                    <option {{ in_array($val->id, $terms->all()) ? 'selected="selected" ' : '' }} value="{{ $val->id }}" data-items="{{ $val }}">{{ $val->title }}</option>
+                                    <option {{ in_array($val->id, $terms->all()) ? 'selected="selected" ' : '' }} value="{{ $val->id }}" data-tw="tanwencms" data-items="{{ $val }}">{{ $val->title }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -95,117 +151,87 @@
 
                     <div class="col-md-12 table-stock" style="margin-top: 5px;padding: 0;"></div>
                 </div>
-                <!-- /.box-body -->
             </div>
-
-            <div class="box box-solid">
-                <!-- /.box-header -->
-                <div class="box-body no-padding">
+            <div class="panel panel-default">
+                <div class="panel-body" style="padding: 5px;">
                     <div class="form-group">
-                        <textarea class="description"
-                                  name="metas[description]">{{ old('metas.description', $product->description) }}</textarea>
+                            <textarea class="description" name="metas[description]">{{ old('metas.description', $product->description) }}</textarea>
                     </div>
+
                 </div>
-                <!-- /.box-body -->
             </div>
         </div>
         <div class="posts-right">
             <div class="right-panel">
-                <!-- settting -->
-                <div class="box box-solid">
-                    <!-- /.box-header -->
-                    <div class="box-header with-border">
-                        <h3 class="box-title">{{ trans_choice('admin.setting', 0) }}</h3>
-                        <div class="box-tools pull-right">
-                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i
-                                        class="fa fa-minus"></i></button>
-                        </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">{{ trans_choice('tanwencms::admin.setting', 0) }}</h3>
                     </div>
-                    <div class="box-body">
+                    <div class="panel-body">
+
                         <div class="form-group">
-                            <label class="control-label">{{ trans_choice('admin.tag', 0) }}：</label>
-                            <select class="select2 select-tags form-control" multiple="multiple" name="terms[]">
+                            <label class="control-label">{{ trans_choice('tanwencms::admin.tag', 0) }}：</label>
+                            <select class="select2 select-tags form-control" multiple="multiple" name="terms[]" >
                                 <option value=""></option>
-                                @foreach ($tags as $item)
-                                    <option {{ in_array($item->id, $terms->all()) ? 'selected="selected" ' : '' }} value="{{ $item->id }}">{{ $item->title }}</option>
-                                @endforeach
+                                @foreach ($tags as $id => $title)
+                                    <option {{ in_array($id, $terms->all()) ? 'selected="selected" ' : '' }} value="{{ $id }}">{{ $title }}</option>
+                                @endforeach;
                             </select>
                         </div>
 
                         <div class="form-group">
-                            <label for="url-slug-input">{{ trans('ecommerce.shelves') }}</label>
+                            <label for="url-slug-input">{{ trans('Ecommerce::admin.shelves') }}</label>
                             <select name="is_release" class="form-control">
-                                <option value="0" {{ old('is_release', $product->is_release)==0?'selected':''}}>{{ trans('ecommerce.unshelves') }}</option>
-                                <option value="1" {{ old('is_release', $product->is_release)!=0?'selected':''}}>{{ trans('ecommerce.shelves') }}</option>
+                                <option value="0" {{ old('is_release', $product->is_release)==0?'selected':''}}>{{ trans('Ecommerce::admin.unshelves') }}</option>
+                                <option value="1" {{ old('is_release', $product->is_release)!=0?'selected':''}}>{{ trans('Ecommerce::admin.shelves') }}</option>
                             </select>
                         </div>
                     </div>
-                    <!-- /.box-body -->
                 </div>
-                <!-- settting -->
 
-                <!-- category -->
-                <div class="box box-solid">
-                    <!-- /.box-header -->
-                    <div class="box-header with-border">
-                        <h3 class="box-title">{{ trans_choice('ecommerce.product_category', 1) }}</h3>
-                        <div class="box-tools pull-right">
-                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i
-                                        class="fa fa-minus"></i></button>
-                        </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading collapsed" role="tab" data-toggle="collapse" data-parent="#accordion"
+                         href="#select_categories" aria-expanded="true" aria-controls="collapseTwo">
+                        <h4 class="panel-title">
+                            {{ trans_choice('tanwencms::admin.product_category', 1) }}
+                            <span class="pull-right" role="button">
+                            <i class="fa fa-angle-down"></i>
+                            <i class="fa fa-angle-up"></i>
+                        </span>
+                        </h4>
                     </div>
-                    <div class="box-body">
-                        <div class="tab-content select-box">
-                            <div role="tabpanel" class="tab-pane active" id="select_categories" style="border-top: 1px solid #ddd;">
-                                <ul>
-                                    @recursive($categories)
-                                    <li>
-                                        <label>
-                                            <input value="{{ $val->id }}" data-image="{{ $val->image }}"
-                                                   data-linkable_name="{{ trans_choice(''.snake_case(class_basename($val)), 0) }}"
-                                                   data-title="{{ $val->title }}" data-linkable_id="{{ $val->id }}"
-                                                   data-linkable_type="{{ get_class($val) }}"
-                                                   data-title="{{ $val->title }}" type="checkbox">
-                                            <font>{{ $val->title }}</font>
-                                        </label>
-                                        @if(!empty($val->children))
-                                            @nextrecursive(
-                                            <ul class="children">,</ul>)
-                                        @endif
-                                    </li>
-                                    @endrecursive
-                                </ul>
+                    <div id="select_categories" class="panel-collapse collapse in" role="tabpanel">
+                        <div class="panel-body">
+                            <!-- Tab panes -->
+                            <div class="tab-content">
+                                <div role="tabpanel" class="tab-pane active" id="select_categories_all">
+                                    <ul>
+                                        @each('tanwencms::components.tree.multiple_choice_items', $categories, 'model')
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <!-- /.box-body -->
                 </div>
-                <!-- category -->
 
-                <!-- cover -->
-                <div class="box box-solid">
-                    <!-- /.box-header -->
-                    <div class="box-header with-border">
-                        <h3 class="box-title">{{ trans('ecommerce.product_gallery') }}</h3>
-                        <div class="box-tools pull-right">
-                            <button type="button" class="btn btn-box-tool" data-widget="collapse">
-                                <i class="fa fa-minus"></i>
-                            </button>
-                        </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">{{ trans('Ecommerce::admin.product_gallery') }}</h3>
                     </div>
-                    <div class="box-body">
-                        <a class="pull-right"
-                           href="javascript:showImageSelector('gallery')"
-                           style=" color: #337ab7 !important">{{ trans('admin.select_image') }}</a>
+
+                    <div class="panel-body" style="padding: 10px">
+                        <p>
+                            <a href="javascript:showImageSelector('gallery');">
+                                {{ trans('admin.select_image') }}
+                            </a>
+                        </p>
                         <div id="gallery">
                             @foreach (old('metas.gallery', $product->gallery) as $url)
                                 <div class="col-md-4"><img class="img-rounded img-responsive" src="{{ $url }}"><input name="metas[gallery][]" value="{{ $url }}" type="hidden"><button type="button" class="btn btn-box-tool delete" data-original-title="Remove"><i class="fa fa-times"></i></button></div>
                             @endforeach
                         </div>
                     </div>
-                    <!-- /.box-body -->
                 </div>
-                <!-- cover -->
 
                 <button type="submit" class="btn btn-primary btn-lg btn-block">{{ trans('admin.save') }}</button>
             </div>
@@ -220,9 +246,7 @@
 
 
 <script>
-    var money_identifier = "{{ trans('ecommerce.currency') }}";
 
-    var terms = JSON.parse('{!! $terms->toJson() !!}');
     // function to update the file selected by elfinder
     var processSelectedFileId = '';
 
@@ -252,7 +276,9 @@
     });
 
 
+    var terms = JSON.parse('{!! $terms->toJson() !!}');
     $(function () {
+
         $('#select_categories :input[type="checkbox"]').attr('name', 'terms[]');
 
         $('#select_categories :input[type="checkbox"]').on('ifCreated', function(event){
@@ -277,6 +303,7 @@
 
         tinymce.init({
             selector: '.description',
+            language: "{{ str_replace("-",  "_", config('app.locale')) }}",
             skin: 'voyager',
             height: 300,
             menubar: true,
@@ -297,6 +324,7 @@
             ]
         });
 
+
         $('.select2').select2({
             allowClear: true,
             placeholder: $(this).data('data-placeholder'),
@@ -310,10 +338,10 @@
             selected: JSON.parse('{!! $terms->toJson() !!}'),
             default: JSON.parse('{!! $skus !!}'),
             language:{
-                'price': "{{ trans('ecommerce.price') }}",
-                'market_price': "{{ trans('ecommerce.market_price') }}",
-                'cost_price': "{{ trans('ecommerce.cost_price') }}",
-                'stock': "{{ trans('ecommerce.stock') }}",
+                'price': "{{ trans('Ecommerce::admin.price') }}",
+                'market_price': "{{ trans('Ecommerce::admin.market_price') }}",
+                'cost_price': "{{ trans('Ecommerce::admin.cost_price') }}",
+                'stock': "{{ trans('Ecommerce::admin.stock') }}",
                 'batch': "{{ trans('admin.batch') }}",
             },
             init: function () {
@@ -349,6 +377,8 @@
             });
             data.goods[code] = value;
         });
+
     });
 
 </script>
+
