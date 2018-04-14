@@ -4,6 +4,7 @@ namespace Tanwencn\Ecommerce\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Tanwencn\Cms\Helpers\RelationHelper;
 use Tanwencn\Cms\Http\Controllers\Admin\Traits\AdminTrait;
 use Tanwencn\Ecommerce\Models\ProductTag;
 
@@ -65,28 +66,26 @@ class TagController extends Controller
 
     public function store()
     {
-        $this->save(new ProductTag());
+        $this->_save(new ProductTag());
         return redirect($this->_action('index'))->with('toastr_success', trans('admin.save_succeeded'));
     }
 
     public function update($id)
     {
-        $this->save(ProductTag::findOrFail($id));
-        return redirect($this->_action('index'))->with('toastr_success', trans('admin.save_succeeded'));
+        $this->_save(ProductTag::findOrFail($id));
     }
 
-    protected function save(ProductTag $model)
+    protected function _save(ProductTag $model)
     {
         $request = request();
 
         $this->validate($request, [
             'title' => 'required|max:80'
         ]);
-        $input = $request->all();
 
-        $model->fill($input);
+        RelationHelper::boot($model)->save();
 
-        $model->save();
+        return redirect($this->_action('index'))->with('toastr_success', trans('admin.save_succeeded'));
     }
 
     public function destroy($id)

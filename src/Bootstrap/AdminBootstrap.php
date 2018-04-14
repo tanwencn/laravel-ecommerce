@@ -63,17 +63,7 @@ class AdminBootstrap
         AdminHelper::route()->group(function ($router) {
             $router->namespace('Tanwencn\Ecommerce\Http\Controllers\Admin')->group(function ($router) {
 
-                $router->resource('products', 'ProductController', [
-                    'names' => [
-                        'index' => 'admin.products.index',
-                        'create' => 'admin.products.create',
-                        'store' => 'admin.products.store',
-                        'show' => 'admin.products.show',
-                        'edit' => 'admin.products.edit',
-                        'update' => 'admin.products.update',
-                        'destroy' => 'admin.products.destroy'
-                    ]
-                ]);
+                $router->resource('products', 'ProductController');
 
                 $router->resource('ecommerce/categories', 'CategoryController');
 

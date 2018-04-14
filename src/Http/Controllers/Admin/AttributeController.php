@@ -4,6 +4,7 @@ namespace Tanwencn\Ecommerce\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Tanwencn\Cms\Helpers\RelationHelper;
 use Tanwencn\Cms\Http\Controllers\Admin\Traits\AdminTrait;
 use Tanwencn\Ecommerce\Models\ProductAttribute;
 
@@ -65,28 +66,23 @@ class AttributeController extends Controller
 
     public function store()
     {
-        return $this->save(new ProductAttribute());
+        return $this->_save(new ProductAttribute());
     }
 
     public function update($id)
     {
-        return $this->save(ProductAttribute::findOrFail($id));
+        return $this->_save(ProductAttribute::findOrFail($id));
     }
 
-    protected function save(ProductAttribute $model)
+    protected function _save(ProductAttribute $model)
     {
         $request = request();
 
         $this->validate($request, [
             'title' => 'required|max:80'
         ]);
-        $input = $request->all();
 
-        $model->fill($input);
-
-        $model->save();
-
-        $model->syncMany('children', 'title', $input['children']);
+        RelationHelper::boot($model)->save();
 
         return redirect($this->_action('index'))->with('toastr_success', trans('admin.save_succeeded'));
     }

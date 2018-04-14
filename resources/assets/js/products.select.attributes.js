@@ -125,7 +125,7 @@ var AttributeSelect = function () {
                     }
                     html += '<div class="form-group" style="margin: 5px">';
                     html += '<div class="input-group attr-value">';
-                    html += '<span class="input-group-addon"><input name="terms[]" data-selected="' + selected + '" type="checkbox" data-name="' + value.name + '" value="' + value.id + '"></span>';
+                    html += '<span class="input-group-addon"><input name="attributes[]" data-selected="' + selected + '" type="checkbox" data-name="' + value.name + '" value="' + value.id + '"></span>';
                     html += '<span class="input-group-addon p-l-0">' + value.name + '</span>';
                     html += '</div>';
                     html += '</div>';

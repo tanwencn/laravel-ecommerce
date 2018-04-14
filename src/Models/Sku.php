@@ -2,12 +2,15 @@
 
 namespace Tanwencn\Ecommerce\Models;
 
+use GeneaLabs\LaravelModelCaching\Traits\Cachable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Sku extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, Cachable;
+
+    public $relation_key = 'sku_code';
 
     protected $guarded = [];
 

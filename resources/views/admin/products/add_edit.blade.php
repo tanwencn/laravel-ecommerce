@@ -1,6 +1,9 @@
 <style>
-    .table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
-        vertical-align: middle;
+    #gallery div.sortable-chosen{
+        opacity:1;
+    }
+    #gallery div.sortable-ghost *{
+        opacity:0.1;
     }
 
     #gallery div {
@@ -81,11 +84,11 @@
                     <div class="form-horizontal">
                         <div class="col-md-3 text-right"><label class="control-label">{{ trans_choice('ecommerce.attribute', 0) }}：</label></div>
                         <div class="form-group col-md-9">
-                            <select class="select2 select-attributes form-control" name="terms[]"
+                            <select class="select2 select-attributes form-control" name="attributes[]"
                                     multiple="multiple" data-placeholder="{{ trans('ecommerce.select_sales_attribute') }}">
                                 <option value=""></option>
-                                @foreach ($attriibutes as $val)
-                                    <option {{ in_array($val->id, $terms->all()) ? 'selected="selected" ' : '' }} value="{{ $val->id }}" data-items="{{ $val }}">{{ $val->title }}</option>
+                                @foreach ($attributes as $val)
+                                    <option {{ in_array($val->id, $product->attributes->toArray()) ? 'selected="selected" ' : '' }} value="{{ $val->id }}" data-items="{{ $val }}">{{ $val->title }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -124,10 +127,10 @@
                     <div class="box-body">
                         <div class="form-group">
                             <label class="control-label">{{ trans_choice('admin.tag', 0) }}：</label>
-                            <select class="select2 select-tags form-control" multiple="multiple" name="terms[]">
+                            <select class="select2 select-tags form-control" multiple="multiple" name="tags[]">
                                 <option value=""></option>
                                 @foreach ($tags as $item)
-                                    <option {{ in_array($item->id, $terms->all()) ? 'selected="selected" ' : '' }} value="{{ $item->id }}">{{ $item->title }}</option>
+                                    <option {{ in_array($item->id, $product->tags) ? 'selected="selected" ' : '' }} value="{{ $item->id }}">{{ $item->title }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -161,8 +164,8 @@
                                     @recursive($categories)
                                     <li>
                                         <label>
-                                            <input value="{{ $val->id }}" data-image="{{ $val->image }}"
-                                                   data-linkable_name="{{ trans_choice(''.snake_case(class_basename($val)), 0) }}"
+                                            <input name="categories[]" {{ in_array($val->id, $args[0])?"checked":'' }} value="{{ $val->id }}" data-image="{{ $val->image }}"
+                                                   data-linkable_name="{{ trans_choice('tanwencms::admin.'.snake_case(class_basename($val)), 0) }}"
                                                    data-title="{{ $val->title }}" data-linkable_id="{{ $val->id }}"
                                                    data-linkable_type="{{ get_class($val) }}"
                                                    data-title="{{ $val->title }}" type="checkbox">
@@ -173,7 +176,7 @@
                                             <ul class="children">,</ul>)
                                         @endif
                                     </li>
-                                    @endrecursive
+                                    @endrecursive($product->categories)
                                 </ul>
                             </div>
                         </div>
@@ -194,9 +197,11 @@
                         </div>
                     </div>
                     <div class="box-body">
+                        <div style="width: 100%;float: left">
                         <a class="pull-right"
                            href="javascript:showImageSelector('gallery')"
                            style=" color: #337ab7 !important">{{ trans('admin.select_image') }}</a>
+                        </div>
                         <div id="gallery">
                             @foreach (old('metas.gallery', $product->gallery) as $url)
                                 <div class="col-md-4"><img class="img-rounded img-responsive" src="{{ $url }}"><input name="metas[gallery][]" value="{{ $url }}" type="hidden"><button type="button" class="btn btn-box-tool delete" data-original-title="Remove"><i class="fa fa-times"></i></button></div>
@@ -222,7 +227,6 @@
 <script>
     var money_identifier = "{{ trans('ecommerce.currency') }}";
 
-    var terms = JSON.parse('{!! $terms->toJson() !!}');
     // function to update the file selected by elfinder
     var processSelectedFileId = '';
 
@@ -253,13 +257,6 @@
 
 
     $(function () {
-        $('#select_categories :input[type="checkbox"]').attr('name', 'terms[]');
-
-        $('#select_categories :input[type="checkbox"]').on('ifCreated', function(event){
-            if($.inArray(parseInt($(this).val()), terms) >= 0 || $.inArray($(this).val().toString(), terms) >= 0) {
-                $(this).prop('checked', true);
-            }
-        });
 
         $('#select_categories :input[type="checkbox"]').iCheck({
             checkboxClass: 'icheckbox_minimal-red',
@@ -307,7 +304,7 @@
 
 
         AttributeSelect.init({
-            selected: JSON.parse('{!! $terms->toJson() !!}'),
+            selected: JSON.parse('{!! $product->attributes->toJson() !!}'),
             default: JSON.parse('{!! $skus !!}'),
             language:{
                 'price': "{{ trans('ecommerce.price') }}",

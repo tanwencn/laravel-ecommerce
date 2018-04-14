@@ -111,11 +111,11 @@
                                         <table class="table">
                                             <thead>
                                             <tr>
-                                                <th>{{ trans('Ecommerce::admin.attributes') }}</th>
-                                                <th>{{ trans('Ecommerce::admin.price') }}</th>
-                                                <th>{{ trans('Ecommerce::admin.cost_price') }}</th>
-                                                <th>{{ trans('Ecommerce::admin.stock') }}</th>
-                                                <th>{{ trans('Ecommerce::admin.sales_volume') }}</th>
+                                                <th>{{ trans('ecommerce.attributes') }}</th>
+                                                <th>{{ trans('ecommerce.price') }}</th>
+                                                <th>{{ trans('ecommerce.cost_price') }}</th>
+                                                <th>{{ trans('ecommerce.stock') }}</th>
+                                                <th>{{ trans('ecommerce.sales_volume') }}</th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -152,7 +152,7 @@
                             <td>{{ $product->categories->implode('title', ',') }}</td>
                             <td>{{ $product->tags->implode('title', ',') }}</td>
                             <td>
-                                <input type="checkbox" data-key="{{ $product->id }}" data-onname="{{ trans('Ecommerce::admin.shelves') }}" data-offname="{{ trans('Ecommerce::admin.unshelves') }}"
+                                <input type="checkbox" data-key="{{ $product->id }}" data-onname="{{ trans('ecommerce.shelves') }}" data-offname="{{ trans('ecommerce.unshelves') }}"
                                        class="grid-switch-released" {{ $product->is_release?'checked':'' }} />
                             </td>
                             <td>{{ $product->updated_at }}</td>
@@ -161,7 +161,7 @@
                                     <a href="javascript:void(0);" data-id="{{ $product->id }}" class="grid-row-restore">{{ trans('admin.restore') }}</a>&nbsp;&nbsp;&nbsp;
                                     <a href="javascript:void(0);" data-id="{{ $product->id }}" class="grid-row-delete" data-message="{{ trans('admin.delete_confirm') }}"> {{ trans('admin.delete_permanently') }}</a>
                                 @else
-                                    <a href="{{ route('admin.products.edit', $product->id) }}">{{ trans('admin.edit') }}</a>&nbsp;&nbsp;&nbsp;
+                                    <a href="{{ $_action('edit', $product->id) }}">{{ trans('admin.edit') }}</a>&nbsp;&nbsp;&nbsp;
                                     <a href="javascript:void(0);" data-id="{{ $product->id }}" class="grid-row-delete" data-message="After deletion, you can restore the data at the Recycle Bin.">{{ trans('admin.delete') }}</a>
                                 @endif
                             </td>
@@ -212,7 +212,7 @@
                     var value = state ? '1' : '0';
                     $.ajax({
                         method: 'post',
-                        url: '{{ route('admin.products.index') }}/' + pk,
+                        url: '{{ $_action('index') }}/' + pk,
                         data: {
                             _method: 'PUT',
                             _token: "{{ csrf_token() }}",
@@ -235,7 +235,7 @@
                 var value = $(this).data('value');
                 $.ajax({
                     method: 'post',
-                    url: '{{ route('admin.products.index') }}/' + id,
+                    url: '{{ $_action('index') }}/' + id,
                     data: {
                         _method: 'PUT',
                         _token: "{{ csrf_token() }}",
@@ -265,7 +265,7 @@
                 var value = $(this).data('value');
                 $.ajax({
                     method: 'post',
-                    url: '{{ route('admin.products.index') }}/' + id,
+                    url: '{{ $_action('index') }}/' + id,
                     data: {
                         _method: 'PUT',
                         _token: "{{ csrf_token() }}",

@@ -4,6 +4,7 @@ namespace Tanwencn\Ecommerce\Http\Controllers\Admin;
 
 
 use Illuminate\Routing\Controller;
+use Tanwencn\Cms\Helpers\RelationHelper;
 use Tanwencn\Cms\Http\Controllers\Admin\Traits\AdminTrait;
 use Tanwencn\Ecommerce\Models\ProductCategory;
 
@@ -63,29 +64,24 @@ class CategoryController extends Controller
                 'message' => trans('admin.save_succeeded'),
             ]);
         } else {
-            return $this->save(new ProductCategory());
+            return $this->_save(new ProductCategory());
         }
     }
 
     public function update($id)
     {
-        return $this->save(ProductCategory::findOrFail($id));
+        return $this->_save(ProductCategory::findOrFail($id));
     }
 
-    protected function save(ProductCategory $model)
+    protected function _save(ProductCategory $model)
     {
         $request = request();
 
         $this->validate($request, [
             'title' => 'required|max:80'
         ]);
-        $input = $request->all();
 
-        $model->fill($input);
-
-        $model->save();
-
-        return redirect($this->getUrl('index'))->with('toastr_success', trans('admin.save_succeeded'));
+        RelationHelper::boot($model)->save();
     }
 
     public function destroy($id)
