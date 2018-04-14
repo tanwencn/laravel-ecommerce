@@ -33,27 +33,32 @@ class AdminBootstrap
     {
         AdminHelper::addMenu('products', [
             'name' => trans_choice('ecommerce.product', 0),
-            'icon' => 'fa-shopping-bag',
+            'icon' => 'fa-shopping-bag'
         ]);
         AdminHelper::addMenu('all_product', [
             'name' => trans('ecommerce.all_product'),
-            'uri' => 'products'
+            'uri' => 'products',
+            'authority' => ['view', Models\Product::class]
         ], 'products');
         AdminHelper::addMenu('add_product', [
             'name' => trans('ecommerce.add_product'),
-            'uri' => 'products/create'
+            'uri' => 'products/create',
+            'authority' => ['add', Models\Product::class]
         ], 'products');
         AdminHelper::addMenu('attributes', [
             'name' => trans_choice('ecommerce.attribute', 0),
-            'uri' => 'ecommerce/attributes'
+            'uri' => 'ecommerce/attributes',
+            'authority' => ['view', Models\ProductAttribute::class]
         ], 'products');
         AdminHelper::addMenu('categories', [
             'name' => trans_choice('admin.category', 0),
-            'uri' => 'ecommerce/categories'
+            'uri' => 'ecommerce/categories',
+            'authority' => ['view', Models\ProductCategory::class]
         ], 'products');
         AdminHelper::addMenu('tags', [
             'name' => trans_choice('admin.tag', 0),
-            'uri' => 'ecommerce/tags'
+            'uri' => 'ecommerce/tags',
+            'authority' => ['view', Models\ProductTag::class]
         ], 'products');
 
     }
