@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use \Tanwencn\Ecommerce\Models;
 use Silber\Bouncer\BouncerFacade as Bouncer;
 
-class AbilitiesSeed extends Seeder
+class EcommerceAbilitiesSeed extends Seeder
 {
     /**
      * Run the database seeds.
