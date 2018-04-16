@@ -26,13 +26,15 @@ class EcommerceServiceProvider extends \Illuminate\Support\ServiceProvider
      */
     public function boot()
     {
-        $this->loadMigrationsFrom(__DIR__ . '/../migrations');
-        $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'tanwencms');
-
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'tanwencms');
 
         if ($this->app->runningInConsole()) {
             $this->publishes([__DIR__.'/../resources/assets' => public_path('vendor/laravel-ecommerce')]);
+
+            $this->publishes([__DIR__ . '/../resources/assets' => public_path('vendor/laravel-ecommerce')], 'public');
+            $this->publishes([__DIR__ . '/../resources/lang' => resource_path('lang')], 'lang');
+            $this->publishes([__DIR__ . '/../database/migrations' => database_path('migrations')], 'migrations');
+            $this->publishes([__DIR__ . '/../database/seeds' => database_path('seeds')], 'seeds');
         }
         
         AppBootstrap::boot();

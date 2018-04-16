@@ -11,17 +11,14 @@ return [
     'cost_price' => '成本价',
     'stock' => '库存',
     'currency' => 'RMB',
-    'add_product' => '添加产品',
-    'edit_product' => '编辑产品',
-    'product_list' => '产品列表',
     'shelves' => '上架',
     'unshelves' => '下架',
     'sales_volume' => '销量',
 
-
     'product' => '产品',
     'all_product' => '所有产品',
     'add_product' => '添加产品',
+    'edit_product' => '编辑产品',
     'product_category' => '产品分类',
     'product_tag' => '产品标签',
 
