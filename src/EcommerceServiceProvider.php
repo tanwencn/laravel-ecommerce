@@ -29,14 +29,14 @@ class EcommerceServiceProvider extends \Illuminate\Support\ServiceProvider
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'tanwencms');
 
         if ($this->app->runningInConsole()) {
-            $this->publishes([__DIR__.'/../resources/assets' => public_path('vendor/laravel-ecommerce')]);
-
-            $this->publishes([__DIR__ . '/../resources/assets' => public_path('vendor/laravel-ecommerce')], 'public');
-            $this->publishes([__DIR__ . '/../resources/lang' => resource_path('lang')], 'lang');
-            $this->publishes([__DIR__ . '/../database/migrations' => database_path('migrations')], 'migrations');
-            $this->publishes([__DIR__ . '/../database/seeds' => database_path('seeds')], 'seeds');
+            $this->publishes([
+                __DIR__ . '/../resources/assets' => public_path('vendor/laravel-ecommerce'),
+                __DIR__ . '/../resources/lang' => resource_path('lang'),
+                __DIR__ . '/../database/migrations' => database_path('migrations'),
+                __DIR__ . '/../database/seeds' => database_path('seeds')
+            ], 'tanwencms');
         }
-        
+
         AppBootstrap::boot();
 
         AdminBootstrap::boot();
@@ -48,8 +48,8 @@ class EcommerceServiceProvider extends \Illuminate\Support\ServiceProvider
     public function register()
     {
 
-        $this->app->singleton('Ecommerce', function () {
+        /*$this->app->singleton('Ecommerce', function () {
 
-        });
+        });*/
     }
 }
