@@ -26,7 +26,7 @@ class AdminBootstrap
     }
 
     protected function registerAssets(){
-        AdminHelper::addJsFile('/vendor/laravel-cms/commerce/js/products.select.attributes.js');
+        AdminHelper::addJsFile('/vendor/laravel-ecommerce/js/products.select.attributes.min.js');
     }
 
     protected function registerMenus()
