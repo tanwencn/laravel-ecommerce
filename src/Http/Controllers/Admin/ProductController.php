@@ -25,7 +25,7 @@ class ProductController extends Controller
     {
         //基础数据
         $categories = ProductCategory::select('id', 'parent_id', 'title', 'taxonomy')->get();
-        $model = Product::with('categories', 'tags', 'skus')->withCount('skus')->byOrder('new');
+        $model = Product::with('categories', 'tags', 'skus')->withCount('skus');
 
 
         //筛选器

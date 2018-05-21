@@ -123,15 +123,16 @@
                                                 <tr>
                                                     <td>{{ $sku->sku_name }}</td>
                                                     <td>
+                                                        <span>{{ trans('ecommerce.currency') }}</span>
                                                         <del>
-                                                            <span><span>$</span>{{ $sku->market_price }}</span>
+                                                            <span>{{ $sku->market_price }}</span>
                                                         </del>
                                                         <ins>
-                                                            <span><span>$</span>{{ $sku->price }}</span>
+                                                            <span>{{ $sku->price }}</span>
                                                         </ins>
                                                     </td>
                                                     <td>
-                                                        <ins><span><span>$</span>{{ $sku->cost_price }}</span>
+                                                        <ins><span><span>{{ trans('ecommerce.currency') }}</span>{{ $sku->cost_price }}</span>
                                                         </ins>
                                                     </td>
                                                     <td>{{ $sku->stock }}</td>

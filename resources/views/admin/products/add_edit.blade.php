@@ -88,7 +88,7 @@
                                     multiple="multiple" data-placeholder="{{ trans('ecommerce.select_sales_attribute') }}">
                                 <option value=""></option>
                                 @foreach ($attributes as $val)
-                                    <option {{ in_array($val->id, $product->attributes->toArray()) ? 'selected="selected" ' : '' }} value="{{ $val->id }}" data-items="{{ $val }}">{{ $val->title }}</option>
+                                    <option {{ in_array($val->id, old('attributes', $product->attributes->toArray())) ? 'selected="selected" ' : '' }} value="{{ $val->id }}" data-items="{{ $val }}">{{ $val->title }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -304,7 +304,7 @@
 
 
         AttributeSelect.init({
-            selected: JSON.parse('{!! $product->attributes->toJson() !!}'),
+            selected: JSON.parse('@json(old('attributes', $product->attributes->toArray()))'),
             default: JSON.parse('{!! $skus !!}'),
             language:{
                 'price': "{{ trans('ecommerce.price') }}",

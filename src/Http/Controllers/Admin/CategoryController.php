@@ -47,9 +47,7 @@ class CategoryController extends Controller
 
         $data = ProductCategory::tree()->get();
 
-        $action = $model->id?$this->getUrl('update', $model->id):$this->getUrl('store');
-
-        return $this->view('product_category.add_edit', compact('model', 'data', 'action'));
+        return $this->view('product_category.add_edit', compact('model', 'data'));
     }
 
     public function store()
@@ -64,16 +62,16 @@ class CategoryController extends Controller
                 'message' => trans('admin.save_succeeded'),
             ]);
         } else {
-            return $this->_save(new ProductCategory());
+            return $this->save(new ProductCategory());
         }
     }
 
     public function update($id)
     {
-        return $this->_save(ProductCategory::findOrFail($id));
+        return $this->save(ProductCategory::findOrFail($id));
     }
 
-    protected function _save(ProductCategory $model)
+    protected function save(ProductCategory $model)
     {
         $request = request();
 
@@ -82,22 +80,13 @@ class CategoryController extends Controller
         ]);
 
         RelationHelper::boot($model)->save();
+
+        return redirect($this->_action('index'))->with('toastr_success', trans('admin.save_succeeded'));
     }
 
-    public function destroy($id)
+    public function _destroy($id)
     {
-        $ids = explode(',', $id);
-        foreach ($ids as $id) {
-            if (empty($id)) {
-                continue;
-            }
-            $model = ProductCategory::findOrFail($id);
-            $model->delete();
-        }
-
-        return response([
-            'status' => true,
-            'message' => trans('admin.delete_succeeded'),
-        ]);
+        $model = ProductCategory::findOrFail($id);
+        $model->delete();
     }
 }
