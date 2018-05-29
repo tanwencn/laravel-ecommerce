@@ -47,9 +47,5 @@ class EcommerceServiceProvider extends \Illuminate\Support\ServiceProvider
      */
     public function register()
     {
-
-        /*$this->app->singleton('Ecommerce', function () {
-
-        });*/
     }
 }

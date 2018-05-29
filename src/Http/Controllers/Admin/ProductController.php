@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * 作者: Tanwen
+ * 邮箱: 361657055@qq.com
+ * 所在地: 广东广州
+ * 时间: 2017/10/12 11:02
+ */
 namespace Tanwencn\Ecommerce\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
@@ -105,7 +110,7 @@ class ProductController extends Controller
         return $this->view('products.add_edit', compact('product', 'attributes', 'categories', 'tags', 'skus'));
     }
 
-    protected function _save(Product $model)
+    protected function save(Product $model)
     {
         $request = request();
 
@@ -133,7 +138,7 @@ class ProductController extends Controller
      */
     public function store()
     {
-        return $this->_save(new Product());
+        return $this->save(new Product());
     }
 
     public function update($id, Request $request)
@@ -153,7 +158,7 @@ class ProductController extends Controller
                     $model->restore();
                 } else {
                     $model = Product::withUnReleased()->findOrFail($id);
-                    $model->fill($input)->_save();
+                    $model->fill($input)->save();
                 }
             }
             return response([
@@ -163,7 +168,7 @@ class ProductController extends Controller
         }
 
         $model = Product::withUnReleased()->findOrFail($id);
-        return $this->_save($model);
+        return $this->save($model);
     }
 
     public function _destroy($id)

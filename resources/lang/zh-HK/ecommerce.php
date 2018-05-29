@@ -10,7 +10,7 @@ return [
     'market_price' => '市場價',
     'cost_price' => '成本價',
     'stock' => '庫存',
-    'currency' => 'RMB',
+    'currency' => '￥',
     'shelves' => '上架',
     'unshelves' => '下架',
     'sales_volume' => '銷量',

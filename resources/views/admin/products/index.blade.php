@@ -80,7 +80,7 @@
                         <th>{{ trans('admin.title') }}</th>
                         <th>SKU</th>
                         <th>{{ trans('ecommerce.stock') }}</th>
-                        <th>{{ trans('ecommerce.price') }}({{ trans('ecommerce.currency') }})</th>
+                        <th>{{ trans('ecommerce.price') }}</th>
                         <th>{{ trans_choice('admin.category', 0) }}</th>
                         <th>{{ trans_choice('admin.tag', 0) }}</th>
                         <th>{{ trans('ecommerce.shelves') }}</th>
@@ -145,11 +145,7 @@
                                 </template>
                             </td>
                             <td>{{ $product->skus->sum('stock') }}</td>
-                            @php
-                                $min_price = $product->skus->min('price');
-                                $max_price = $product->skus->min('price');
-                            @endphp
-                            <td>@if($min_price == $max_price) {{ $min_price }} @else {{ $max_price }} ~ {{ $max_price }} @endif</td>
+                            <td>{{ trans('ecommerce.currency') }}{{ $product->price }}</td>
                             <td>{{ $product->categories->implode('title', ',') }}</td>
                             <td>{{ $product->tags->implode('title', ',') }}</td>
                             <td>
