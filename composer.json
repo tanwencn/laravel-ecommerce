@@ -14,6 +14,7 @@
     ],
     "require": {
         "php": ">=7.0.0",
+        "tanwencn/laravel-cart": "~1.0",
         "tanwencn/laravel-cms": "~2.0"
     },
     "autoload": {
