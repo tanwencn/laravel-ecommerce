@@ -110,7 +110,7 @@
         $('.save').click(function(){
             var btn = $('.save');
             var nestable = JSON.stringify($('.dd').nestable('serialize'));
-            btn.attr("disabled", true);
+            btn.button('loading');
             $.ajax({
                 method: 'post',
                 url: '{{ request()->getPathInfo() }}',
@@ -120,7 +120,7 @@
                     _token: "{{ csrf_token() }}"
                 },
                 complete:function(){
-                    btn.attr("disabled", false);
+                    btn.button('reset');
                 },
                 success: function (data) {
                     toastr.success(data.message);

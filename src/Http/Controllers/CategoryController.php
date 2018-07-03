@@ -1,10 +1,5 @@
 <?php
-/**
- * 作者: Tanwen
- * 邮箱: 361657055@qq.com
- * 所在地: 广东广州
- * 时间: 2017/10/12 11:02
- */
+
 namespace Tanwencn\Ecommerce\Http\Controllers\Admin;
 
 
@@ -52,7 +47,9 @@ class CategoryController extends Controller
 
         $data = ProductCategory::tree()->get();
 
-        return $this->view('product_category.add_edit', compact('model', 'data'));
+        $action = $model->id?$this->getUrl('update', $model->id):$this->getUrl('store');
+
+        return $this->view('product_category.add_edit', compact('model', 'data', 'action'));
     }
 
     public function store()
@@ -67,16 +64,16 @@ class CategoryController extends Controller
                 'message' => trans('admin.save_succeeded'),
             ]);
         } else {
-            return $this->save(new ProductCategory());
+            return $this->_save(new ProductCategory());
         }
     }
 
     public function update($id)
     {
-        return $this->save(ProductCategory::findOrFail($id));
+        return $this->_save(ProductCategory::findOrFail($id));
     }
 
-    protected function save(ProductCategory $model)
+    protected function _save(ProductCategory $model)
     {
         $request = request();
 
@@ -85,13 +82,22 @@ class CategoryController extends Controller
         ]);
 
         RelationHelper::boot($model)->save();
-
-        return redirect($this->_action('index'))->with('toastr_success', trans('admin.save_succeeded'));
     }
 
-    public function _destroy($id)
+    public function destroy($id)
     {
-        $model = ProductCategory::findOrFail($id);
-        $model->delete();
+        $ids = explode(',', $id);
+        foreach ($ids as $id) {
+            if (empty($id)) {
+                continue;
+            }
+            $model = ProductCategory::findOrFail($id);
+            $model->delete();
+        }
+
+        return response([
+            'status' => true,
+            'message' => trans('admin.delete_succeeded'),
+        ]);
     }
 }

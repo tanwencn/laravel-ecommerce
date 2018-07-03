@@ -1,10 +1,5 @@
 <?php
-/**
- * 作者: Tanwen
- * 邮箱: 361657055@qq.com
- * 所在地: 广东广州
- * 时间: 2017/10/12 11:02
- */
+
 namespace Tanwencn\Ecommerce\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
@@ -30,7 +25,7 @@ class ProductController extends Controller
     {
         //基础数据
         $categories = ProductCategory::select('id', 'parent_id', 'title', 'taxonomy')->get();
-        $model = Product::with('categories', 'tags', 'skus')->withCount('skus');
+        $model = Product::with('categories', 'tags', 'skus')->withCount('skus')->byOrder('new');
 
 
         //筛选器
@@ -110,7 +105,7 @@ class ProductController extends Controller
         return $this->view('products.add_edit', compact('product', 'attributes', 'categories', 'tags', 'skus'));
     }
 
-    protected function save(Product $model)
+    protected function _save(Product $model)
     {
         $request = request();
 
@@ -138,7 +133,7 @@ class ProductController extends Controller
      */
     public function store()
     {
-        return $this->save(new Product());
+        return $this->_save(new Product());
     }
 
     public function update($id, Request $request)
@@ -158,7 +153,7 @@ class ProductController extends Controller
                     $model->restore();
                 } else {
                     $model = Product::withUnReleased()->findOrFail($id);
-                    $model->fill($input)->save();
+                    $model->fill($input)->_save();
                 }
             }
             return response([
@@ -168,7 +163,7 @@ class ProductController extends Controller
         }
 
         $model = Product::withUnReleased()->findOrFail($id);
-        return $this->save($model);
+        return $this->_save($model);
     }
 
     public function _destroy($id)

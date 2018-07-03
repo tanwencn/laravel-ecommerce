@@ -1,18 +1,13 @@
 <?php
-/**
- * 作者: Tanwen
- * 邮箱: 361657055@qq.com
- * 所在地: 广东广州
- * 时间: 2017/10/12 11:02
- */
-namespace Tanwencn\Ecommerce\Models;
 
-use GeneaLabs\LaravelModelCaching\Traits\Cachable;
-use Tanwencn\Cms\Models\Abstracts\ContentAbstract;
+namespace Tanwencn\Ecommerce\Database\Eloquent;
 
-class Product extends ContentAbstract
+use Tanwencn\Blog\Database\Eloquent\Datas\Contents;
+use Tanwencn\Blog\Database\Eloquent\Model;
+
+class Product extends Model
 {
-    use Cachable;
+    use Contents;
 
     public function categories(){
         return $this->terms(ProductCategory::class);
@@ -40,16 +35,5 @@ class Product extends ContentAbstract
 
     public function getGalleryAttribute(){
         return $this->getMetas('gallery')?json_decode($this->getMetas('gallery')):[];
-    }
-
-    public function getPriceAttribute(){
-        $min = $this->skus->min('price');
-        $max = $this->skus->max('price');
-        return $min == $max?$min:"{$min} ~ {$max}";
-    }
-
-    public function getUrlAttribute()
-    {
-        return url("/product/{$this->id}");
     }
 }

@@ -8,9 +8,9 @@
 
 namespace Tanwencn\Ecommerce;
 
-use Illuminate\Support\Facades\View;
-use Tanwencn\Ecommerce\Bootstrap\AdminBootstrap;
-use Tanwencn\Ecommerce\Bootstrap\AppBootstrap;
+use Tanwencn\Blog\Facades\Admin;
+use Tanwencn\Ecommerce\Consoles\BootPermissionsCommand;
+use Tanwencn\Ecommerce\Consoles\InstallCommand;
 
 class EcommerceServiceProvider extends \Illuminate\Support\ServiceProvider
 {
@@ -31,15 +31,19 @@ class EcommerceServiceProvider extends \Illuminate\Support\ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__ . '/../resources/assets' => public_path('vendor/laravel-ecommerce'),
-                __DIR__ . '/../resources/lang' => resource_path('lang'),
+                //__DIR__ . '/../resources/lang' => resource_path('lang'),
                 __DIR__ . '/../database/migrations' => database_path('migrations'),
-                __DIR__ . '/../database/seeds' => database_path('seeds')
-            ], 'tanwencms');
+            ]);
+
+            $this->commands([
+                InstallCommand::class,
+                BootPermissionsCommand::class
+            ]);
         }
 
-        AppBootstrap::boot();
+        //AppBootstrap::boot();
 
-        AdminBootstrap::boot();
+        //AdminBootstrap::boot();
     }
 
     /**
@@ -47,5 +51,6 @@ class EcommerceServiceProvider extends \Illuminate\Support\ServiceProvider
      */
     public function register()
     {
+        $this->app->register(AdminServiceProvider::class);
     }
 }

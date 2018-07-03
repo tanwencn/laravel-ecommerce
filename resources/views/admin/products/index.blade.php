@@ -80,7 +80,7 @@
                         <th>{{ trans('admin.title') }}</th>
                         <th>SKU</th>
                         <th>{{ trans('ecommerce.stock') }}</th>
-                        <th>{{ trans('ecommerce.price') }}</th>
+                        <th>{{ trans('ecommerce.price') }}({{ trans('ecommerce.currency') }})</th>
                         <th>{{ trans_choice('admin.category', 0) }}</th>
                         <th>{{ trans_choice('admin.tag', 0) }}</th>
                         <th>{{ trans('ecommerce.shelves') }}</th>
@@ -123,16 +123,15 @@
                                                 <tr>
                                                     <td>{{ $sku->sku_name }}</td>
                                                     <td>
-                                                        <span>{{ trans('ecommerce.currency') }}</span>
                                                         <del>
-                                                            <span>{{ $sku->market_price }}</span>
+                                                            <span><span>$</span>{{ $sku->market_price }}</span>
                                                         </del>
                                                         <ins>
-                                                            <span>{{ $sku->price }}</span>
+                                                            <span><span>$</span>{{ $sku->price }}</span>
                                                         </ins>
                                                     </td>
                                                     <td>
-                                                        <ins><span><span>{{ trans('ecommerce.currency') }}</span>{{ $sku->cost_price }}</span>
+                                                        <ins><span><span>$</span>{{ $sku->cost_price }}</span>
                                                         </ins>
                                                     </td>
                                                     <td>{{ $sku->stock }}</td>
@@ -145,7 +144,11 @@
                                 </template>
                             </td>
                             <td>{{ $product->skus->sum('stock') }}</td>
-                            <td>{{ trans('ecommerce.currency') }}{{ $product->price }}</td>
+                            @php
+                                $min_price = $product->skus->min('price');
+                                $max_price = $product->skus->min('price');
+                            @endphp
+                            <td>@if($min_price == $max_price) {{ $min_price }} @else {{ $max_price }} ~ {{ $max_price }} @endif</td>
                             <td>{{ $product->categories->implode('title', ',') }}</td>
                             <td>{{ $product->tags->implode('title', ',') }}</td>
                             <td>

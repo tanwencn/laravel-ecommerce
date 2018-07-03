@@ -10,7 +10,7 @@ return [
     'market_price' => 'market price',
     'cost_price' => 'cost price',
     'stock' => 'Inventory',
-    'currency' => '$',
+    'currency' => 'RMB',
     'shelves' => 'Shelf',
     'unshelves' => 'Un Shelves',
     'sales_volume' => 'Sales',

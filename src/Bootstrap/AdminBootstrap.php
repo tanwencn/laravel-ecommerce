@@ -26,40 +26,12 @@ class AdminBootstrap
     }
 
     protected function registerAssets(){
-        AdminHelper::addJsFile('/vendor/laravel-ecommerce/js/products.select.attributes.min.js');
+        AdminHelper::addJsFile('/vendor/laravel-cms/commerce/js/products.select.attributes.js');
     }
 
     protected function registerMenus()
     {
-        AdminHelper::addMenu('products', [
-            'name' => trans_choice('ecommerce.product', 0),
-            'icon' => 'fa-shopping-bag'
-        ]);
-        AdminHelper::addMenu('all_product', [
-            'name' => trans('ecommerce.all_product'),
-            'uri' => 'products',
-            'authority' => ['view', Models\Product::class]
-        ], 'products');
-        AdminHelper::addMenu('add_product', [
-            'name' => trans('ecommerce.add_product'),
-            'uri' => 'products/create',
-            'authority' => ['add', Models\Product::class]
-        ], 'products');
-        AdminHelper::addMenu('attributes', [
-            'name' => trans_choice('ecommerce.attribute', 0),
-            'uri' => 'ecommerce/attributes',
-            'authority' => ['view', Models\ProductAttribute::class]
-        ], 'products');
-        AdminHelper::addMenu('categories', [
-            'name' => trans_choice('admin.category', 0),
-            'uri' => 'ecommerce/categories',
-            'authority' => ['view', Models\ProductCategory::class]
-        ], 'products');
-        AdminHelper::addMenu('tags', [
-            'name' => trans_choice('admin.tag', 0),
-            'uri' => 'ecommerce/tags',
-            'authority' => ['view', Models\ProductTag::class]
-        ], 'products');
+
 
     }
 

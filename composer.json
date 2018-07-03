@@ -1,6 +1,6 @@
 {
     "name": "tanwencn/laravel-ecommerce",
-    "description": "TanwenCms Extended",
+    "description": "TaneCN Extended",
     "type": "library",
     "keywords": ["laravel", "shop", "mall"],
     "keywords": ["laravel", "shop", "mall", "ecommerce", "cms", "blog", "news"],
@@ -15,7 +15,7 @@
     "require": {
         "php": ">=7.0.0",
         "tanwencn/laravel-cart": "~1.0",
-        "tanwencn/laravel-cms": "~2.0"
+        "tanwencn/laravel-blog": "~1.0"
     },
     "autoload": {
         "psr-4": {

@@ -1,4 +1,4 @@
-<form action="{{ $model->id?$_action('update', $model->id):$_action('store') }}" method="POST">
+<form  action="{{ $action }}" method="POST">
 {{ csrf_field() }}
 @if(isset($model->id))
     {{ method_field("PUT") }}

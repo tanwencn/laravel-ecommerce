@@ -15,7 +15,7 @@ class CreateStockKeepingUnitsTable extends Migration {
 		Schema::create('stock_keeping_units', function(Blueprint $table)
 		{
             $table->bigInteger('id', true)->unsigned();
-			$table->bigInteger('target_id')->unsigned();
+			$table->bigInteger('target_id')->unsigned()->comment('分类ID');
 			$table->string('sku_code', 50)->default('');
 			$table->string('sku_name', 80)->default('')->comment('SKU名称');
 			$table->decimal('cost_price', 10)->unsigned()->default(0.00)->comment('成本价');

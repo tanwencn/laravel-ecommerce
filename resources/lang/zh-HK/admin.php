@@ -10,11 +10,11 @@ return [
     'market_price' => '市場價',
     'cost_price' => '成本價',
     'stock' => '庫存',
-    'currency' => '￥',
+    'currency' => 'RMB',
     'shelves' => '上架',
     'unshelves' => '下架',
     'sales_volume' => '銷量',
-    
+
     'product' => '產品',
     'all_product' => '所有產品',
     'add_product' => '添加產品',
