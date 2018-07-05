@@ -8,8 +8,6 @@
 
 namespace Tanwencn\Ecommerce;
 
-use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
 use Tanwencn\Ecommerce\Database\Eloquent;
 
