@@ -1,4 +1,9 @@
-<!-- begin row -->
+@extends('admin::layouts.app')
+
+@section('title', trans('admin.product_attribute'))
+
+@section('content')
+    <!-- begin row -->
 <div class="row">
     <!-- begin col-12 -->
     <div class="col-md-12">
@@ -17,12 +22,12 @@
                 </div>
 
                 <div class="btn-group">
-                    <a class="btn btn-sm btn-success" href="{{ $_action('create') }}"><i
-                                class="fa fa-plus f-s-12"></i> {{ trans('ecommerce.add_attribute') }}</a>
+                    <a class="btn btn-sm btn-success" href="{{ Admin::action('create') }}"><i
+                                class="fa fa-plus f-s-12"></i> {{ trans('admin.add_product_attribute') }}</a>
                 </div>
 
                 <div class="box-tools">
-                    <form id="search" action="{{ $_action('index') }}">
+                    <form id="search" action="{{ Admin::action('index') }}">
                         <div class="input-group input-group-sm" style="width: 150px;">
                             <input type="text" name="search" class="form-control pull-right"
                                    value="{{ request('search') }}"
@@ -42,7 +47,7 @@
                         <th><input type="checkbox" class="grid-select-all"></th>
                         <th>ID</th>
                         <th>{{ trans('admin.title') }}</th>
-                        <th>{{ trans('ecommerce.attribute_values') }}</th>
+                        <th>{{ trans('admin.attribute_values') }}</th>
                         <th>{{ trans('admin.updated_at') }}</th>
                         <th>{{ trans('admin.operating') }}</th>
                     </tr>
@@ -62,7 +67,7 @@
                             </td>
                             <td>{{ $attribute->updated_at }}</td>
                             <td>
-                                <a href="{{ $_action('edit', $attribute->id) }}">{{ trans('admin.edit') }}</a>&nbsp;&nbsp;&nbsp;
+                                <a href="{{ Admin::action('edit', $attribute->id) }}">{{ trans('admin.edit') }}</a>&nbsp;&nbsp;&nbsp;
                                 <a href="javascript:void(0);" data-id="{{ $attribute->id }}"
                                    data-url="{{ request()->getPathInfo() }}"
                                    class="grid-row-delete">{{ trans('admin.delete') }}</a>
@@ -90,3 +95,5 @@
     </div>
     <!-- end panel -->
 </div>
+
+@endsection

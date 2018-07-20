@@ -1,5 +1,12 @@
+@extends('admin::layouts.app')
+
+@section('title', trans('admin.'.($model->id?'edit_product_attribute':'add_product_attribute')))
+
+@section('breadcrumbs') <li><a href="{{ Admin::action('index') }}"> {{ trans_choice('admin.product_attribute', 1) }}</a></li> @endsection
+
+@section('content')
 <form data-pjax="true"
-      action="{{ isset($model->id)?$_action('update', $model->id):$_action('store') }}"
+      action="{{ isset($model->id)?Admin::action('update', $model->id):Admin::action('store') }}"
       method="POST">
 {{ csrf_field() }}
 @if(isset($model->id))
@@ -29,7 +36,7 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-sm-2"><h4 class="pull-right">{{ trans('ecommerce.attribute_values') }}</h4>
+                        <div class="col-sm-2"><h4 class="pull-right">{{ trans('admin.attribute_values') }}</h4>
                         </div>
                         <div class="col-sm-8"></div>
                     </div>
@@ -123,4 +130,6 @@
         });
     });
 </script>
+
+@endsection
 

@@ -1,3 +1,8 @@
+@extends('admin::layouts.app')
+
+@section('title', trans_choice('admin.product_tag', 1))
+
+@section('content')
 <!-- begin row -->
 <div class="row">
     <!-- begin col-12 -->
@@ -11,17 +16,21 @@
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu">
+                        @can('admin.delete_product_tag')
                         <li><a href="javascript:void(0)" class="grid-batch-delete" data-url="{{ request()->getPathInfo() }}">{{ trans('admin.delete') }}</a></li>
+                        @endcan
                     </ul>
                 </div>
 
+                @can('admin.add_product_tag')
                 <div class="btn-group">
-                    <a class="btn btn-sm btn-success" href="{{ $_action('create') }}"><i
+                    <a class="btn btn-sm btn-success" href="{{ Admin::action('create') }}"><i
                                 class="fa fa-plus f-s-12"></i> {{ trans('admin.add_tag') }}</a>
                 </div>
+                @endcan
 
                 <div class="box-tools">
-                    <form id="search" action="{{ $_action('index') }}">
+                    <form id="search" action="{{ Admin::action('index') }}">
                         <div class="input-group input-group-sm" style="width: 150px;">
                             <input type="text" name="search" class="form-control pull-right"
                                    value="{{ request('search') }}"
@@ -55,8 +64,12 @@
                             <td>{{ $tag->title }}</td>
                             <td>{{ $tag->updated_at }}</td>
                             <td>
-                                <a href="{{ $_action('edit', $tag->id) }}">{{ trans('admin.edit') }}</a>&nbsp;&nbsp;&nbsp;
+                                @can('admin.edit_product_tag')
+                                <a href="{{ Admin::action('edit', $tag) }}">{{ trans('admin.edit') }}</a> &nbsp;
+                                @endcan
+                                @can('admin.delete_product_tag')
                                 <a href="javascript:void(0);" data-id="{{ $tag->id }}" data-url="{{ request()->getPathInfo() }}" class="grid-row-delete">{{ trans('admin.delete') }}</a>
+                                @endcan
                             </td>
                         </tr>
                     @endforeach
@@ -81,3 +94,4 @@
     </div>
     <!-- end panel -->
 </div>
+@endsection

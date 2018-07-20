@@ -1,4 +1,9 @@
-<div class="callout callout-info">
+@extends('admin::layouts.app')
+
+@section('title', trans_choice('admin.product_attribute', 1))
+
+@section('content')
+<div class="callout" style="background-color: #ddd !important; border-left-color: #aaa !important;">
     <h4>{{ trans('admin.tip') }}!</h4>
 
     <p>{{ trans('admin.adjust_sort_tip') }}</p>
@@ -15,13 +20,17 @@
                         <i class="fa fa-minus-square-o"></i>&nbsp;{{ trans('admin.collapse_all') }}
                     </button>
                 </div>
+                @can('admin.add_product_category')
                 <div class="btn-group">
-                    <a class="btn btn-sm btn-success pull-right" href="{{ request()->getPathInfo().'/create' }}"><i class="fa fa-plus f-s-12"></i> {{ trans('admin.add_category') }}</a>
+                    <a class="btn btn-sm btn-success pull-right" href="{{ request()->getPathInfo().'/create' }}"><i class="fa fa-plus f-s-12"></i> {{ trans('admin.add_product_category') }}</a>
                 </div>
+                @endcan
 
+                @can('admin.edit_product_category')
                 <div class="btn-group pull-right">
                     <button class="btn btn-primary btn-sm save" style="width: 120px">{{ trans('admin.save') }}</button>
                 </div>
+                @endcan
 
             </div>
             <!-- /.box-header -->
@@ -37,8 +46,12 @@
                                 </span>
                                 <strong>{{ $val->title }}</strong>
                                 <span class="pull-right dd-nodrag">
+                                    @can('admin.edit_product_category')
                                     <a href="{{ request()->getPathInfo().'/' . $val->id .'/edit' }}"><i class="fa fa-edit"></i></a>
+                                    @endcan
+                                    @can('admin.delete_product_category')
                                     <a href="javascript:;" class="trash" data-id="{{ $val->id }}"><i class="fa fa-trash"></i></a>
+                                    @endcan
                                 </span>
                             </div>
                             @nextrecursive(<ol class="dd-list">, </ol>)
@@ -49,9 +62,11 @@
             </div>
             <!-- /.box-body -->
             <div class="box-footer clearfix no-border">
+                @can('admin.edit_product_category')
                 <div class="btn-group pull-right">
                     <button class="btn btn-primary btn-sm save" style="width: 120px">{{ trans('admin.save') }}</button>
                 </div>
+                @endcan
             </div>
         </div>
     </div>
@@ -110,17 +125,17 @@
         $('.save').click(function(){
             var btn = $('.save');
             var nestable = JSON.stringify($('.dd').nestable('serialize'));
-            btn.button('loading');
+            btn.attr("disabled", true);
             $.ajax({
                 method: 'post',
-                url: '{{ request()->getPathInfo() }}',
+                url: '{{ Admin::action('order') }}',
                 data: {
                     nestable:nestable,
                     _nestable: true,
                     _token: "{{ csrf_token() }}"
                 },
                 complete:function(){
-                    btn.button('reset');
+                    btn.attr("disabled", false);
                 },
                 success: function (data) {
                     toastr.success(data.message);
@@ -129,3 +144,5 @@
         });
     });
 </script>
+
+@endsection

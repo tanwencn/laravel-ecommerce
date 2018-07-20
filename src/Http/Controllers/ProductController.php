@@ -1,32 +1,25 @@
 <?php
 
-namespace Tanwencn\Ecommerce\Http\Controllers\Admin;
+namespace Tanwencn\Ecommerce\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
-use Tanwencn\Cms\Helpers\RelationHelper;
-use Tanwencn\Cms\Http\Controllers\Admin\Traits\AdminTrait;
-use Illuminate\Support\Facades\DB;
-use Tanwencn\Ecommerce\Models\ProductAttribute;
-use Tanwencn\Ecommerce\Models\ProductCategory;
-use Tanwencn\Ecommerce\Models\Product;
-use Tanwencn\Ecommerce\Models\ProductTag;
+use Tanwencn\Blog\Http\Controllers\Controller;
+use Tanwencn\Blog\Http\Resources\ContentResource;
+use Tanwencn\Ecommerce\Database\Eloquent\Product;
+use Tanwencn\Ecommerce\Database\Eloquent\ProductAttribute;
+use Tanwencn\Ecommerce\Database\Eloquent\ProductCategory;
+use Tanwencn\Ecommerce\Database\Eloquent\ProductTag;
 
 class ProductController extends Controller
 {
-    use AdminTrait;
+    use ContentResource;
 
-    public function __construct()
-    {
-        $this->middleware('curd:'.Product::class.',ecommerce');
-    }
+    protected $model = Product::class;
 
     public function index(Request $request)
     {
         //基础数据
-        $categories = ProductCategory::select('id', 'parent_id', 'title', 'taxonomy')->get();
-        $model = Product::with('categories', 'tags', 'skus')->withCount('skus')->byOrder('new');
-
+        $model = Product::with('categories', 'tags', 'skus')->withCount('skus');
 
         //筛选器
         $trashed = $request->query('trashed');
@@ -60,56 +53,39 @@ class ProductController extends Controller
         $results = $model->paginate();
 
         $statistics = [
-            'total' => Product::withUnReleased()->count(),
-            'release' => Product::count(),
-            'unrelease' => Product::onlyUnReleased()->count(),
-            'delete' => Product::onlyTrashed()->withUnReleased()->count()
+            'total' => $this->model::withUnReleased()->count(),
+            'release' => $this->model::count(),
+            'unrelease' => $this->model::onlyUnReleased()->count(),
+            'delete' => $this->model::onlyTrashed()->withUnReleased()->count()
         ];
 
-        return $this->view('products.index', compact('results','statistics', 'title'));
+        return $this->view('index', compact('results', 'statistics', 'title', 'att'));
     }
 
-    public function create()
+    protected function _form($model)
     {
-        return $this->_form(new Product());
-    }
-
-    public function edit($id)
-    {
-        $model = Product::withUnReleased()->findOrFail($id);
-
-        $this->setPageTitle(trans('ecommerce.edit_product'));
-
-        return $this->_form($model);
-    }
-
-    protected function _form(Product $product)
-    {
-        $product->load(['metas', 'skus' => function($query){
+        $model->load(['metas', 'skus' => function ($query) {
             $query->withTrashed();
         }]);
-        $this->addBreadcrumb([
-            'name' => trans_choice('ecommerce.product', 0),
-            'url' => $this->_action('index')
-        ]);
-        $categories = ProductCategory::tree()->get();
-        $tags = ProductTag::select('id', 'parent_id', 'title')->get();
-        $attributes = ProductAttribute::tree()->get();
 
-        $product->categories = old('categories', $product->categories->pluck('id')->toArray());
-        $product->tags = old('tags', $product->tags->pluck('id')->toArray());
-        $product->attributes = collect(old('attriibutes', $product->attributes->pluck('id')->toArray()));
+        $data = compact('model');
 
-        $skus = collect(old('skus', $product->skus->keyBy('sku_code')->toArray()));
+        $data['categories'] = ProductCategory::tree()->get();
+        $model->categories = old('categories', $model->categories->pluck('id')->toArray());
 
-        return $this->view('products.add_edit', compact('product', 'attributes', 'categories', 'tags', 'skus'));
+        $data['tags'] = ProductTag::select('id', 'parent_id', 'title')->get();
+        $model->tags = old('tags', $model->tags->pluck('id')->toArray());
+
+        $data['attributes'] = ProductAttribute::tree()->get();
+        $model->attributes = collect(old('attributes', $model->attributes->pluck('id')->toArray()));
+
+        $data['skus'] = collect(old('skus', $model->skus->keyBy('sku_code')->toArray()));
+
+        return $this->view('add_edit', $data);
     }
 
-    protected function _save(Product $model)
-    {
-        $request = request();
-
-        $this->validate($request, [
+    protected function validatesMap(){
+        return [
             'title' => 'required|max:120',
             'excerpt' => 'max:80',
             'gallery' => 'array',
@@ -118,61 +94,6 @@ class ProductController extends Controller
             'skus.*.market_price' => 'numeric|min:1',
             'skus.*.price' => 'numeric|min:1',
             'skus.*.stock' => 'numeric|min:1',
-        ]);
-
-        RelationHelper::boot($model)->save();
-
-        return redirect($this->_action('index'))->with('toastr_success', trans('admin.save_succeeded'));
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store()
-    {
-        return $this->_save(new Product());
-    }
-
-    public function update($id, Request $request)
-    {
-        $action = $request->input('_only');
-        $only = ['is_release', 'restore'];
-        if (in_array($action, $only)) {
-            $input = $request->only($only);
-            $ids = explode(',', $id);
-            foreach ($ids as $id) {
-                if (empty($id)) {
-                    continue;
-                }
-
-                if ($action == 'restore') {
-                    $model = Product::withUnReleased()->onlyTrashed()->findOrFail($id);
-                    $model->restore();
-                } else {
-                    $model = Product::withUnReleased()->findOrFail($id);
-                    $model->fill($input)->_save();
-                }
-            }
-            return response([
-                'status' => true,
-                'message' => trans('admin.save_succeeded'),
-            ]);
-        }
-
-        $model = Product::withUnReleased()->findOrFail($id);
-        return $this->_save($model);
-    }
-
-    public function _destroy($id)
-    {
-        $model = Product::withUnReleased()->withTrashed()->findOrFail($id);
-        if ($model->trashed()) {
-            $model->forceDelete();
-        } else {
-            $model->delete();
-        }
+        ];
     }
 }

@@ -1,11 +1,11 @@
 <?php
 
-namespace Tanwencn\Ecommerce\Models;
+namespace Tanwencn\Ecommerce\Database\Eloquent;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Tanwencn\Blog\Database\Eloquent\Model;
+use Tanwencn\Blog\Database\Eloquent\CacheModel;
 
-class Sku extends Model
+class Sku extends CacheModel
 {
     use SoftDeletes;
 
@@ -19,7 +19,7 @@ class Sku extends Model
 
     public function product()
     {
-        return $this->belongsTo(Product::class, 'body_id');
+        return $this->belongsTo(Product::class, 'target_id');
     }
 
     public function setSkuNameAttribute($value){

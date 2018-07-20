@@ -1,5 +1,13 @@
+@extends('admin::layouts.app')
+
+@section('title', $model->id?trans('admin.edit_tag'):trans('admin.add_tag'))
+
+@section('breadcrumbs') <li><a href="{{ Admin::action('index') }}"> {{ trans_choice('admin.product_tag', 1) }}</a></li> @endsection
+
+
+@section('content')
 <form data-pjax="true"
-      action="{{ isset($model->id)?$_action('update', $model->id):$_action('store') }}"
+      action="{{ Admin::action('form', $model) }}"
       method="POST">
 {{ csrf_field() }}
 @if(isset($model->id))
@@ -47,4 +55,5 @@
         $('.select2').select2();
     });
 </script>
+@endsection
 

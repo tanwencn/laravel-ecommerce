@@ -43,7 +43,7 @@ class AdminServiceProvider extends ServiceProvider
                 'uri' => 'products/create',
                 'authority' => 'add_product'
             ],
-            trans('admin.attribute') => [
+            trans('admin.product_attribute') => [
                 'uri' => 'ecommerce/attributes',
                 'authority' => 'view_product_attribute'
             ],
@@ -59,12 +59,12 @@ class AdminServiceProvider extends ServiceProvider
     }
 
     protected function registerWidgets(){
-        \Admin::side()->add(trans_choice('ecommerce.product_category', 0), Eloquent\ProductCategory::class);
-        \Admin::side()->add(trans_choice('ecommerce.product_tag', 0), Eloquent\ProductTag::class);
+        \Admin::side()->add(trans_choice('admin.product_category', 0), Eloquent\ProductCategory::class);
+        \Admin::side()->add(trans_choice('admin.product_tag', 0), Eloquent\ProductTag::class);
 
         //\Admin::dashboard()->left(DashboardLeftWidget::class);
         //\Admin::dashboard()->right(DashboardRightWidget::class);
 
-        \Admin::asset()->js('/vendor/laravel-cms/commerce/js/products.select.attributes.js', 1);
+        \Admin::asset()->js('/vendor/laravel-ecommerce/js/products.select.attributes.js', 1);
     }
 }

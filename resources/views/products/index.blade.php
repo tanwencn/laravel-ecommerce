@@ -1,10 +1,15 @@
-<!-- begin row -->
+@extends('admin::layouts.app')
+
+@section('title', trans_choice('admin.all_product', 1))
+
+@section('content')
+    <!-- begin row -->
 <div class="row">
     <!-- begin col-12 -->
     <div class="col-md-12">
         <div class="box box-solid">
             <div class="box-body">
-                <form id="search" data-pjax="true" action="{{ $_action('index') }}">
+                <form id="search" data-pjax="true" action="{{ Admin::action('index') }}">
                     <input type="hidden" name="trashed" value="{{ request('trashed', 0) }}">
                     <input type="hidden" name="release" value="{{ request('release') }}">
                     <div class="form-inline">
@@ -30,19 +35,30 @@
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a href="javascript:void(0)" class="grid-batch-release"
-                               data-value="1">{{ trans('ecommerce.shelves') }}</a></li>
-                        <li><a href="javascript:void(0)" class="grid-batch-release"
-                               data-value="0">{{ trans('ecommerce.unshelves') }}</a></li>
-                        <li role="separator" class="divider"></li>
+                        @can('admin.edit_product')
+                            <li><a href="javascript:void(0)" class="grid-batch-release"
+                                   data-value="1">{{ trans('admin.shelves') }}</a></li>
+                            <li><a href="javascript:void(0)" class="grid-batch-release"
+                                   data-value="0">{{ trans('admin.unshelves') }}</a></li>
+                            <li role="separator" class="divider"></li>
+                        @endcan
                         @if(request('trashed'))
-                            <li><a href="javascript:void(0)" class="grid-batch-restore">{{ trans('admin.restore') }}</a>
-                            </li>
-                            <li><a href="javascript:void(0)" class="grid-batch-delete" data-url="{{ request()->getPathInfo() }}">{{ trans('admin.delete_permanently') }}</a>
-                            </li>
+                            @can('admin.edit_product')
+                                <li><a href="javascript:void(0)"
+                                       class="grid-batch-restore">{{ trans('admin.restore') }}</a>
+                                </li>
+                            @endcan
+                            @can('admin.delete_product')
+                                <li><a href="javascript:void(0)" class="grid-batch-delete"
+                                       data-url="{{ request()->getPathInfo() }}">{{ trans('admin.delete_permanently') }}</a>
+                                </li>
+                            @endcan
                         @else
-                            <li><a href="javascript:void(0)" class="grid-batch-delete" data-type="trash" data-url="{{ request()->getPathInfo() }}">{{ trans('admin.move_trash') }}</a>
-                            </li>
+                            @can('admin.delete_product')
+                                <li><a href="javascript:void(0)" class="grid-batch-delete" data-type="trash"
+                                       data-url="{{ request()->getPathInfo() }}">{{ trans('admin.move_trash') }}</a>
+                                </li>
+                            @endcan
                         @endif
                     </ul>
                 </div>
@@ -58,15 +74,17 @@
                                data-value="">{{ trans('admin.all') }}{{ $statistics['total'] }})
                         </label>
                         <label class="btn btn-default btn-sm grid-release {{ request('release')=='up'?'active':'' }}"
-                               data-value="up">{{ trans('ecommerce.shelves') }}({{ $statistics['release'] }})
+                               data-value="up">{{ trans('admin.shelves') }}({{ $statistics['release'] }})
                         </label>
                         <label class="btn btn-default btn-sm grid-release {{ request('release')=='down'?'active':'' }}"
-                               data-value="down">{{ trans('ecommerce.unshelves') }}({{ $statistics['unrelease'] }})
+                               data-value="down">{{ trans('admin.unshelves') }}({{ $statistics['unrelease'] }})
                         </label>
                     </div>
                 @endif
-                <a class="btn btn-sm btn-success pull-right" href="{{ $_action('create') }}"><i
-                            class="fa fa-plus f-s-12"></i> {{ trans('ecommerce.add_product') }}</a>
+                @can('admin.add_product')
+                    <a class="btn btn-sm btn-success pull-right" href="{{ Admin::action('create') }}"><i
+                                class="fa fa-plus f-s-12"></i> {{ trans('admin.add_product') }}</a>
+                @endcan
             </div>
             <div class="box-body no-padding table-responsive">
                 <table class="table table-hover table-striped">
@@ -79,11 +97,13 @@
                         <th>{{ trans('admin.cover') }}</th>
                         <th>{{ trans('admin.title') }}</th>
                         <th>SKU</th>
-                        <th>{{ trans('ecommerce.stock') }}</th>
-                        <th>{{ trans('ecommerce.price') }}({{ trans('ecommerce.currency') }})</th>
+                        <th>{{ trans('admin.stock') }}</th>
+                        <th>{{ trans('admin.price') }}({{ trans('admin.currency') }})</th>
                         <th>{{ trans_choice('admin.category', 0) }}</th>
                         <th>{{ trans_choice('admin.tag', 0) }}</th>
-                        <th>{{ trans('ecommerce.shelves') }}</th>
+                        @if(!request('trashed'))
+                        <th>{{ trans('admin.shelves') }}</th>
+                        @endif
                         <th>{{ trans('admin.updated_at') }}</th>
                         <th>{{ trans('admin.operating') }}</th>
                     </tr>
@@ -111,11 +131,11 @@
                                         <table class="table">
                                             <thead>
                                             <tr>
-                                                <th>{{ trans('ecommerce.attributes') }}</th>
-                                                <th>{{ trans('ecommerce.price') }}</th>
-                                                <th>{{ trans('ecommerce.cost_price') }}</th>
-                                                <th>{{ trans('ecommerce.stock') }}</th>
-                                                <th>{{ trans('ecommerce.sales_volume') }}</th>
+                                                <th>{{ trans('admin.product_attribute') }}</th>
+                                                <th>{{ trans('admin.price') }}</th>
+                                                <th>{{ trans('admin.cost_price') }}</th>
+                                                <th>{{ trans('admin.stock') }}</th>
+                                                <th>{{ trans('admin.sales_volume') }}</th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -151,18 +171,36 @@
                             <td>@if($min_price == $max_price) {{ $min_price }} @else {{ $max_price }} ~ {{ $max_price }} @endif</td>
                             <td>{{ $product->categories->implode('title', ',') }}</td>
                             <td>{{ $product->tags->implode('title', ',') }}</td>
-                            <td>
-                                <input type="checkbox" data-key="{{ $product->id }}" data-onname="{{ trans('ecommerce.shelves') }}" data-offname="{{ trans('ecommerce.unshelves') }}"
-                                       class="grid-switch-released" {{ $product->is_release?'checked':'' }} />
-                            </td>
+                            @if(!request('trashed'))
+                                <td>
+                                    <input type="checkbox"
+                                           @cannot('edit_product') readonly @endcannot
+                                           data-key="{{ $product->id }}"
+                                           data-onname="{{ trans('admin.shelves') }}"
+                                           data-offname="{{ trans('admin.unshelves') }}"
+                                           class="grid-switch-released" {{ $product->is_release?'checked':'' }} />
+                                </td>
+                            @endif
                             <td>{{ $product->updated_at }}</td>
                             <td style="min-width: 60px">
                                 @if(request('trashed'))
-                                    <a href="javascript:void(0);" data-id="{{ $product->id }}" class="grid-row-restore">{{ trans('admin.restore') }}</a>&nbsp;&nbsp;&nbsp;
-                                    <a href="javascript:void(0);" data-id="{{ $product->id }}" class="grid-row-delete" data-message="{{ trans('admin.delete_confirm') }}"> {{ trans('admin.delete_permanently') }}</a>
+                                    @can('admin.edit_product')
+                                        <a href="javascript:void(0);" data-id="{{ $product->id }}"
+                                           class="grid-row-restore">{{ trans('admin.restore') }}</a>&nbsp;&nbsp;&nbsp;
+                                    @endcan
+                                    @can('admin.delete_product')
+                                        <a href="javascript:void(0);" data-id="{{ $product->id }}" class="grid-row-delete"
+                                           data-url="{{ request()->getPathInfo() }}"> {{ trans('admin.delete_permanently') }}</a>
+                                    @endcan
                                 @else
-                                    <a href="{{ $_action('edit', $product->id) }}">{{ trans('admin.edit') }}</a>&nbsp;&nbsp;&nbsp;
-                                    <a href="javascript:void(0);" data-id="{{ $product->id }}" class="grid-row-delete" data-message="After deletion, you can restore the data at the Recycle Bin.">{{ trans('admin.delete') }}</a>
+                                    @can('admin.edit_product')
+                                        <a href="{{ Admin::action('edit', $product->id) }}">{{ trans('admin.edit') }}</a>
+                                        &nbsp;&nbsp;&nbsp; @endcan
+                                    @can('admin.delete_product')
+                                        <a href="javascript:void(0);" data-id="{{ $product->id }}" class="grid-row-delete"
+                                           data-url="{{ request()->getPathInfo() }}"
+                                           data-type="trash">{{ trans('admin.delete') }}</a>
+                                    @endcan
                                 @endif
                             </td>
                         </tr>
@@ -212,7 +250,7 @@
                     var value = state ? '1' : '0';
                     $.ajax({
                         method: 'post',
-                        url: '{{ $_action('index') }}/' + pk,
+                        url: '{{ Admin::action('index') }}/' + pk,
                         data: {
                             _method: 'PUT',
                             _token: "{{ csrf_token() }}",
@@ -235,7 +273,7 @@
                 var value = $(this).data('value');
                 $.ajax({
                     method: 'post',
-                    url: '{{ $_action('index') }}/' + id,
+                    url: '{{ Admin::action('index') }}/' + id,
                     data: {
                         _method: 'PUT',
                         _token: "{{ csrf_token() }}",
@@ -265,7 +303,7 @@
                 var value = $(this).data('value');
                 $.ajax({
                     method: 'post',
-                    url: '{{ $_action('index') }}/' + id,
+                    url: '{{ Admin::action('index') }}/' + id,
                     data: {
                         _method: 'PUT',
                         _token: "{{ csrf_token() }}",
@@ -292,3 +330,5 @@
         });
     </script>
 </div>
+
+@endsection

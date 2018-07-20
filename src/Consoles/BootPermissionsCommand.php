@@ -35,37 +35,21 @@ class BootPermissionsCommand extends \Tanwencn\Blog\Consoles\BootPermissionsComm
      */
     public function handle()
     {
-        //$this->info('Start to initialize permissions');
+        $this->info('Start to initialize permissions');
         // Reset cached roles and permissions
-        /*app()['cache']->forget('spatie.permission.cache');
+        app()['cache']->forget('spatie.permission.cache');
 
-        $this->ability('dashboard');
+        $this->abilityResources('product');
 
-        $this->ability('general_settings');
+        $this->abilityResources('product_category');
 
-        $this->abilityResources('user');
+        $this->abilityResources('product_tag');
 
-        $this->abilityResources('role');
+        $this->abilityResources('product_attribute');
 
-        $this->abilityResources('page');
+        //$this->ability('menu');
 
-        $this->abilityResources('post');
-
-        $this->abilityResources('category');
-
-        $this->abilityResources('tag');
-
-        $this->abilityResources('advertising');
-
-        $this->ability('menu');
-
-        $this->ability('view_comment');
-
-        $this->ability('edit_comment');
-
-        $this->ability('delete_comment');
-
-        $this->info('Initialize permissions is complete');*/
+        $this->info('Initialize permissions is complete');
 
     }
 }

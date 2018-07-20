@@ -1,3 +1,10 @@
+@extends('admin::layouts.app')
+
+@section('title', trans('admin.'.($model->id?'edit_product':'add_product')))
+
+@section('breadcrumbs') <li><a href="{{ Admin::action('index') }}"> {{ trans_choice('admin.all_product', 1) }}</a></li> @endsection
+
+@section('content')
 <style>
     #gallery div.sortable-chosen{
         opacity:1;
@@ -28,9 +35,9 @@
     }
 </style>
 
-<form action="{{ isset($product->id)?$_action('update', $product->id):$_action('store') }}" method="POST">
+<form action="{{ isset($model->id)?Admin::action('update', $model->id):Admin::action('store') }}" method="POST">
 {{ csrf_field() }}
-@if(isset($product->id))
+@if(isset($model->id))
     {{ method_field("PUT") }}
 @endif
 <!-- begin row -->
@@ -52,11 +59,11 @@
                                         <i class="fa fa-times-circle-o"></i>{{$errors->first('title')}}
                                     </label>
                                 @endif
-                                <input type="text" name="title" class="form-control" value="{{ old('title', $product->title)}}">
+                                <input type="text" name="title" class="form-control" value="{{ old('title', $model->title)}}">
                             </div>
                         </div>
                         <div class="form-group {{ $errors->has('excerpt')?"has-error":"" }}">
-                            <label class="control-label col-md-2">{{ trans('ecommerce.product_short_description') }}：</label>
+                            <label class="control-label col-md-2">{{ trans('admin.product_short_description') }}：</label>
                             <div class="col-md-8">
                                 @if($errors->has('excerpt'))
                                     <label class="control-label">
@@ -64,7 +71,7 @@
                                     </label>
                                 @endif
                                 <textarea type="text" class="form-control"
-                                          name="excerpt">{{ old('excerpt', $product->excerpt)}}</textarea>
+                                          name="excerpt">{{ old('excerpt', $model->excerpt)}}</textarea>
                             </div>
                         </div>
                     </div>
@@ -75,20 +82,20 @@
             <div class="box box-solid">
                 <!-- /.box-header -->
                 <div class="box-header with-border">
-                    <h3 class="box-title">{{ trans('ecommerce.sales_options') }}</h3>
+                    <h3 class="box-title">{{ trans('admin.sales_options') }}</h3>
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                     </div>
                 </div>
                 <div class="box-body">
                     <div class="form-horizontal">
-                        <div class="col-md-3 text-right"><label class="control-label">{{ trans_choice('ecommerce.attribute', 0) }}：</label></div>
+                        <div class="col-md-3 text-right"><label class="control-label">{{ trans_choice('admin.attribute', 0) }}：</label></div>
                         <div class="form-group col-md-9">
                             <select class="select2 select-attributes form-control" name="attributes[]"
-                                    multiple="multiple" data-placeholder="{{ trans('ecommerce.select_sales_attribute') }}">
+                                    multiple="multiple" data-placeholder="{{ trans('admin.select_sales_attribute') }}">
                                 <option value=""></option>
-                                @foreach ($attributes as $val)
-                                    <option {{ in_array($val->id, $product->attributes->toArray()) ? 'selected="selected" ' : '' }} value="{{ $val->id }}" data-items="{{ $val }}">{{ $val->title }}</option>
+                                @foreach ($attributes->where('parent_id', 0) as $val)
+                                    <option {{ in_array($val->id, $model->attributes->toArray()) ? 'selected="selected" ' : '' }} value="{{ $val->id }}" data-items="{{ $val }}">{{ $val->title }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -106,7 +113,7 @@
                 <div class="box-body no-padding">
                     <div class="form-group">
                         <textarea class="description"
-                                  name="metas[description]">{{ old('metas.description', $product->description) }}</textarea>
+                                  name="metas[description]">{{ old('metas.description', $model->description) }}</textarea>
                     </div>
                 </div>
                 <!-- /.box-body -->
@@ -126,20 +133,25 @@
                     </div>
                     <div class="box-body">
                         <div class="form-group">
+                            <label>URL {{ trans('admin.slug') }}</label>
+                            <input type="text" name="slug" class="form-control" value="{{ old('slug', $model->slug)}}">
+                        </div>
+
+                        <div class="form-group">
                             <label class="control-label">{{ trans_choice('admin.tag', 0) }}：</label>
                             <select class="select2 select-tags form-control" multiple="multiple" name="tags[]">
                                 <option value=""></option>
                                 @foreach ($tags as $item)
-                                    <option {{ in_array($item->id, $product->tags) ? 'selected="selected" ' : '' }} value="{{ $item->id }}">{{ $item->title }}</option>
+                                    <option {{ in_array($item->id, $model->tags) ? 'selected="selected" ' : '' }} value="{{ $item->id }}">{{ $item->title }}</option>
                                 @endforeach
                             </select>
                         </div>
 
                         <div class="form-group">
-                            <label for="url-slug-input">{{ trans('ecommerce.shelves') }}</label>
+                            <label for="url-slug-input">{{ trans('admin.shelves') }}</label>
                             <select name="is_release" class="form-control">
-                                <option value="0" {{ old('is_release', $product->is_release)==0?'selected':''}}>{{ trans('ecommerce.unshelves') }}</option>
-                                <option value="1" {{ old('is_release', $product->is_release)!=0?'selected':''}}>{{ trans('ecommerce.shelves') }}</option>
+                                <option value="0" {{ old('is_release', $model->is_release)==0?'selected':''}}>{{ trans('admin.unshelves') }}</option>
+                                <option value="1" {{ old('is_release', $model->is_release)!=0?'selected':''}}>{{ trans('admin.shelves') }}</option>
                             </select>
                         </div>
                     </div>
@@ -151,7 +163,7 @@
                 <div class="box box-solid">
                     <!-- /.box-header -->
                     <div class="box-header with-border">
-                        <h3 class="box-title">{{ trans_choice('ecommerce.product_category', 1) }}</h3>
+                        <h3 class="box-title">{{ trans_choice('admin.product_category', 1) }}</h3>
                         <div class="box-tools pull-right">
                             <button type="button" class="btn btn-box-tool" data-widget="collapse"><i
                                         class="fa fa-minus"></i></button>
@@ -165,7 +177,7 @@
                                     <li>
                                         <label>
                                             <input name="categories[]" {{ in_array($val->id, $args[0])?"checked":'' }} value="{{ $val->id }}" data-image="{{ $val->image }}"
-                                                   data-linkable_name="{{ trans_choice('tanwencms::admin.'.snake_case(class_basename($val)), 0) }}"
+                                                   data-linkable_name="{{ trans_choice('admin.'.snake_case(class_basename($val)), 0) }}"
                                                    data-title="{{ $val->title }}" data-linkable_id="{{ $val->id }}"
                                                    data-linkable_type="{{ get_class($val) }}"
                                                    data-title="{{ $val->title }}" type="checkbox">
@@ -176,7 +188,7 @@
                                             <ul class="children">,</ul>)
                                         @endif
                                     </li>
-                                    @endrecursive($product->categories)
+                                    @endrecursive($model->categories)
                                 </ul>
                             </div>
                         </div>
@@ -189,7 +201,7 @@
                 <div class="box box-solid">
                     <!-- /.box-header -->
                     <div class="box-header with-border">
-                        <h3 class="box-title">{{ trans('ecommerce.product_gallery') }}</h3>
+                        <h3 class="box-title">{{ trans('admin.product_gallery') }}</h3>
                         <div class="box-tools pull-right">
                             <button type="button" class="btn btn-box-tool" data-widget="collapse">
                                 <i class="fa fa-minus"></i>
@@ -203,7 +215,7 @@
                            style=" color: #337ab7 !important">{{ trans('admin.select_image') }}</a>
                         </div>
                         <div id="gallery">
-                            @foreach (old('metas.gallery', $product->gallery) as $url)
+                            @foreach (old('metas.gallery', $model->gallery) as $url)
                                 <div class="col-md-4"><img class="img-rounded img-responsive" src="{{ $url }}"><input name="metas[gallery][]" value="{{ $url }}" type="hidden"><button type="button" class="btn btn-box-tool delete" data-original-title="Remove"><i class="fa fa-times"></i></button></div>
                             @endforeach
                         </div>
@@ -225,7 +237,7 @@
 
 
 <script>
-    var money_identifier = "{{ trans('ecommerce.currency') }}";
+    var money_identifier = "{{ trans('admin.currency') }}";
 
     // function to update the file selected by elfinder
     var processSelectedFileId = '';
@@ -257,6 +269,10 @@
 
 
     $(function () {
+
+        $('[name="title"]').keyup(function(){
+            $('[name="slug"]').val(slugify($(this).val()));
+        });
 
         $('#select_categories :input[type="checkbox"]').iCheck({
             checkboxClass: 'icheckbox_minimal-red',
@@ -290,7 +306,7 @@
             ],
             toolbar: 'undo redo | insert | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | code',
             content_css: [
-                '{{ asset('vendor/laravel-cms/tinymce/skins/lightgray/content.min.css') }}',
+                '{{ asset('vendor/laravel-blog/tinymce/skins/lightgray/content.min.css') }}',
             ]
         });
 
@@ -304,22 +320,22 @@
 
 
         AttributeSelect.init({
-            selected: JSON.parse('{!! $product->attributes->toJson() !!}'),
+            selected: JSON.parse('{!! $model->attributes->toJson() !!}'),
             default: JSON.parse('{!! $skus !!}'),
             language:{
-                'price': "{{ trans('ecommerce.price') }}",
-                'market_price': "{{ trans('ecommerce.market_price') }}",
-                'cost_price': "{{ trans('ecommerce.cost_price') }}",
-                'stock': "{{ trans('ecommerce.stock') }}",
+                'price': "{{ trans('admin.price') }}",
+                'market_price': "{{ trans('admin.market_price') }}",
+                'cost_price': "{{ trans('admin.cost_price') }}",
+                'stock': "{{ trans('admin.stock') }}",
                 'batch': "{{ trans('admin.batch') }}",
             },
             init: function () {
                 function initSelectAttributes() {
-                    var parent_id = $('.select-attributes').val();
+                    var attributes = $('.select-attributes').val();
 
                     var items = [];
-                    if($('.select-attributes').val() != null) {
-                        $.each($('.select-attributes').val(), function (index, value) {
+                    if(attributes != null) {
+                        $.each(attributes, function (index, value) {
                             items.push($('.select-attributes').find('option[value="' + value + '"]').data('items'));
                         });
                     }
@@ -349,3 +365,5 @@
     });
 
 </script>
+
+@endsection

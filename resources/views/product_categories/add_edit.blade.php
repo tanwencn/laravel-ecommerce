@@ -1,4 +1,11 @@
-<form  action="{{ $action }}" method="POST">
+@extends('admin::layouts.app')
+
+@section('title', trans('admin.'.($model->id?'edit_product_attribute':'add_product_attribute')))
+
+@section('breadcrumbs') <li><a href="{{ Admin::action('index') }}"> {{ trans_choice('admin.product_attribute', 1) }}</a></li> @endsection
+
+@section('content')
+<form action="{{ Admin::action('form', $model) }}" method="POST">
 {{ csrf_field() }}
 @if(isset($model->id))
     {{ method_field("PUT") }}
@@ -59,4 +66,4 @@
         $('.select2').select2();
     });
 </script>
-
+@endsection
