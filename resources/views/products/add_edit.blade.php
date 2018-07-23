@@ -89,7 +89,7 @@
                 </div>
                 <div class="box-body">
                     <div class="form-horizontal">
-                        <div class="col-md-3 text-right"><label class="control-label">{{ trans_choice('admin.attribute', 0) }}：</label></div>
+                        <div class="col-md-3 text-right"><label class="control-label">{{ trans_choice('admin.product_attribute', 0) }}：</label></div>
                         <div class="form-group col-md-9">
                             <select class="select2 select-attributes form-control" name="attributes[]"
                                     multiple="multiple" data-placeholder="{{ trans('admin.select_sales_attribute') }}">
