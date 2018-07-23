@@ -4,6 +4,7 @@ namespace Tanwencn\Ecommerce\Consoles;
 
 use Illuminate\Console\Command;
 use Tanwencn\Blog\BlogServiceProvider;
+use Tanwencn\Cart\CartServiceProvider;
 use Tanwencn\Ecommerce\EcommerceServiceProvider;
 
 class InstallCommand extends Command
@@ -39,6 +40,9 @@ class InstallCommand extends Command
      */
     public function handle()
     {
+        $this->call('vendor:publish', [
+            '--provider' => CartServiceProvider::class
+        ]);
         $this->call('vendor:publish', [
             '--provider' => EcommerceServiceProvider::class
         ]);
