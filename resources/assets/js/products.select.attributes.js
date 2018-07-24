@@ -220,7 +220,7 @@ var AttributeSelect = function () {
                     '<input type="text" name="skus[' + skucode + '][cost_price]" data-field="cost_price" maxlength="10"  data-type="price" class="form-control" value="' + val.cost_price + '">' +
                     '</div>' +
                     '</td><td>' +
-                    '<input type="text" name="skus[' + skucode + '][stock]" data-field="stock" maxlength="6"  data-type="number" class="form-control" value="' + val.stock + '"/>' +
+                    '<input type="number" name="skus[' + skucode + '][stock]" data-field="stock" maxlength="6"  data-type="number" class="form-control" value="' + val.stock + '"/>' +
                     '</td></tr>';
             });
 

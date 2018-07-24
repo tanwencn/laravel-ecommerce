@@ -65,6 +65,6 @@ class AdminServiceProvider extends ServiceProvider
         //\Admin::dashboard()->left(DashboardLeftWidget::class);
         //\Admin::dashboard()->right(DashboardRightWidget::class);
 
-        \Admin::asset()->js('/vendor/laravel-ecommerce/js/products.select.attributes.js', 1);
+        \Admin::asset()->js('/vendor/laravel-ecommerce/js/products.select.attributes.min.js', 1);
     }
 }

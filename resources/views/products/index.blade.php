@@ -132,8 +132,8 @@
                                             <thead>
                                             <tr>
                                                 <th>{{ trans('admin.product_attribute') }}</th>
-                                                <th>{{ trans('admin.price') }}</th>
-                                                <th>{{ trans('admin.cost_price') }}</th>
+                                                <th>{{ trans('admin.price') }}({{ trans('admin.currency') }})</th>
+                                                <th>{{ trans('admin.cost_price') }}({{ trans('admin.currency') }})</th>
                                                 <th>{{ trans('admin.stock') }}</th>
                                                 <th>{{ trans('admin.sales_volume') }}</th>
                                             </tr>
@@ -141,17 +141,17 @@
                                             <tbody>
                                             @foreach($product->skus as $sku)
                                                 <tr>
-                                                    <td>{{ $sku->sku_name }}</td>
+                                                    <td>{{ $sku->sku_name?:'无' }}</td>
                                                     <td>
                                                         <del>
-                                                            <span><span>$</span>{{ $sku->market_price }}</span>
+                                                            <span>{{ $sku->market_price }}</span>
                                                         </del>
                                                         <ins>
-                                                            <span><span>$</span>{{ $sku->price }}</span>
+                                                            <span>{{ $sku->price }}</span>
                                                         </ins>
                                                     </td>
                                                     <td>
-                                                        <ins><span><span>$</span>{{ $sku->cost_price }}</span>
+                                                        <ins><span>{{ $sku->cost_price }}</span>
                                                         </ins>
                                                     </td>
                                                     <td>{{ $sku->stock }}</td>
